@@ -14,6 +14,7 @@ The following nfr checks are available:
 ### Check outgoing calls (-nfr-check-calls)
 Checks that all outgoing calls to other modules are defined as allowed in the interface specification.
 Emits a warning if this is the case.
+The checks are implemented for call instructions, and local initialisations with function calls.
 Does not emit warning if the function has local (static) storage.
 
 ### Check entry (-nfr-entry-check) 
