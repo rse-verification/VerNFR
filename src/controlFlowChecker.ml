@@ -29,41 +29,50 @@ end
 
 class whiteListFunCallsChecker ispec = object (self)
   inherit genericNFRChecker ispec
-
   method name = "whiteListFunCallsChecker"
+
+  method private is_static vi = match vi.vstorage with | Static -> true | _ -> false
+  method private get_whitelist () =  
+    List.concat_map (fun restr_inc -> List.map (fun x -> x.svar) restr_inc.fns)
+      self#ispec.extern_calls.includes
+  
+  method private check_vi vi =  
+    if not(self#is_static vi) && not(viInList vi (self#get_whitelist ()))  then 
+      Self.warning "Function call to %a, which is not in the whitelist" 
+        Printer.pp_varinfo vi
+    else 
+      Self.debug ~level:3 "Function call to %a (which is in the whitelist)" 
+        Printer.pp_varinfo vi
+
+  (*First argument is the vi being assigned to, ignore for now*)
+  method !vlocal_init _ li = match li with 
+    | ConsInit(vi, _, _) -> self#check_vi vi; Cil.SkipChildren
+    | AssignInit(_) -> Cil.SkipChildren
+    
   method !vinst i = 
-    let whitelist_vis = List.concat_map (fun restr_inc -> List.map (fun x -> x.svar) restr_inc.fns)
-      self#ispec.extern_calls.includes in
     let unroll_call_exp e = match e.enode with 
       | Lval((lh, _)) -> (match lh with
         | Var(vi) -> Some(vi)
         | _ -> 
           Self.debug ~level:3 "mem lval in call exp: %a" Printer.pp_exp e;
           None
-      )
-        
+      )  
       | _ -> 
           Self.debug ~level:3 "not an lval in a call exp: %a" Printer.pp_exp e;
           None
     in
-    let is_static vi = match vi.vstorage with | Static -> true | _ -> false in
     match i with 
-      | Call(_, e, _, _) -> (match unroll_call_exp e with  
-          | Some(vi) -> if not(is_static vi) && not(viInList vi whitelist_vis)  then 
-              Self.warning "Function call to %a, which is not in the whitelist" 
-                Printer.pp_varinfo vi
-              else 
-                Self.debug ~level:3 "Function call to %a (which is in the whitelist)" 
-                  Printer.pp_varinfo vi
+      | Call(_, e, _, _) -> 
+        (match unroll_call_exp e with  
+          | Some(vi) -> self#check_vi vi
           | None -> 
               Self.warning "found memory lval in function call instruction: %a" 
-                Printer.pp_exp e 
-        );
+                Printer.pp_exp e);
         Cil.SkipChildren
       (* | Set()
         Cil.SkipChildren *)
       | _ -> Cil.DoChildren
-
+  
 end
 
 (* let isFunctionPtrType t = match Ast_types.unroll t with 
