@@ -36,6 +36,13 @@ module CheckCalls = Self.False
     (does not emit warnings for calls to local functions (with static storage))" 
 end)
 
+module CheckFunPtrs = Self.False
+(struct
+  let option_name = "-nfr-fun-ptrs"
+  let help = "when on (off by default), emits a warning if any function call is a call \
+    to a function pointer. Verification is at call sites." 
+end)
+
 module CheckAll = Self.False
 (struct
   let option_name = "-nfr-all"

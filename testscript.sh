@@ -24,3 +24,12 @@ frama-c -vernfr -nfr-check-calls testfiles/whitelist_f.c
 
 echo -e "\nDone with outgoing calls checker"
 echo -e "########################################\n\n"
+
+echo "TESTING Function pointer checker"
+
+frama-c -vernfr -nfr-fun-ptrs testfiles/funptr.c
+frama-c -vernfr -nfr-fun-ptrs testfiles/funptr_f.c
+
+echo -e "\nDone with Function pointer checker"
+echo -e "########################################\n\n"
+

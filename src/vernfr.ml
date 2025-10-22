@@ -28,24 +28,6 @@ let test_spec = {
 }
 
 
-(* TODO: Make this better with a class for checkers *)
-(* 
-let checkStaticVars () = 
-  Self.feedback "Checking static vars";
-  Visitor.visitFramacFileSameGlobals (new verifyVarsAreStatic) (Ast.get ())
-
-let checkEntryFns entry_fns = 
-  Self.feedback "Checking entry functions";
-  Visitor.visitFramacFileSameGlobals 
-    (new onlyEntryPointsDeclaredChecker (List.map (fun x -> x.svar) entry_fns)) (Ast.get ())
-
-let checkOutgoingCalls ext_calls = 
-  Self.feedback "Checking outgoing calls";
-  let whitelist = List.flatmap (fun restr_inc -> restr_inc.fns) ext_calls.includes in
-  Visitor.visitFramacFileSameGlobals
-    (new whiteListFunCallsChecker whitelist) (Ast.get ()) *)
-
-
 (* Replace with whatever spec you want to test, should in the future be parsed from input file *)
 let get_ispec () = test_spec
 
@@ -58,7 +40,9 @@ let run () =
       (if CheckEntry.get () || CheckAll.get () then 
         (new onlyEntryPointsDeclaredChecker ispec)#run ());
       (if CheckCalls.get () || CheckAll.get () then 
-        (new whiteListFunCallsChecker ispec)#run ())
+        (new whiteListFunCallsChecker ispec)#run ());
+      (if CheckFunPtrs.get () || CheckAll.get () then 
+        (new noFunctionPointerChecker ispec)#run ())
     end
   else ()
 let () = Boot.Main.extend run

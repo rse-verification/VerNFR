@@ -27,4 +27,9 @@ Emits a warning for any declared variable that is not declared with static stora
 Note: due to normalisation, this might not work for variables that are declared but not used.
 
 
+### Check Function pointers (-nfr-fun-ptrs)
+Emits a warning if any call is made through a function pointer.
+Note that this only checks at call sites, and does not emit warning eg if a variable is declared as function pointer.
+
+
 
