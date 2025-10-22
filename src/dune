@@ -2,7 +2,7 @@
  (name vernfr)
  (public_name frama-c-vernfr.core)
  (flags -open Frama_c_kernel :standard)
- (libraries frama-c.kernel frama-c-metacsl.core)
+ (libraries frama-c.kernel ) ;;frama-c-metacsl.core)
 )
 (plugin
  (name vernfr)

@@ -25,5 +25,5 @@ type ispec = {
   (* requires: *)
     entry_order: order_constraint list;  (*required entry order*)
   (* ensures: *)
-    extern_calls: call_restrictions list;
+    extern_calls: call_restrictions;
 }
