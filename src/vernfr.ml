@@ -1,19 +1,19 @@
-open Ispec 
+(* open Parser_lib.Ispec  *)
 open DataflowChecker 
 open ControlFlowChecker
 (* open GenericNFRChecker *)
 open Options
 (* open Cil_types *)
 
-let foo_fd = Cil.emptyFunction "foo" 
-let bar_fd = Cil.emptyFunction "bar" 
-let finit_fd = Cil.emptyFunction "f_init"
-let f10ms_fd = Cil.emptyFunction "f_10ms"  
-let test_entry = CalledBefore (finit_fd, f10ms_fd)
+(* let foo_vi = (Cil.emptyFunction "foo").svar
+let bar_vi = (Cil.emptyFunction "bar").svar
+let finit_vi = (Cil.emptyFunction "f_init").svar
+let f10ms_vi = (Cil.emptyFunction "f_10ms").svar  
+let test_entry = CalledBefore (finit_vi, f10ms_vi)
 
 let test_restricted_include = {
   hfile = "mod.h";
-  fns = [foo_fd; bar_fd];
+  fns = [foo_vi; bar_vi];
 }
 
 let test_call_restrictions = {
@@ -22,32 +22,30 @@ let test_call_restrictions = {
 } 
 
 let test_spec = {
-  entry_fns = [finit_fd; f10ms_fd];
+  entry_fns = [finit_vi; f10ms_vi];
   entry_order = [test_entry];
   extern_calls = test_call_restrictions;
 }
 
 
-(* Replace with whatever spec you want to test, should in the future be parsed from input file *)
-let get_ispec () = test_spec
+ *)
 
 let run () = 
   if Enabled.get () then
-    let ispec = get_ispec () in
-    begin
-      (if CheckStatic.get () || CheckAll.get () then   
-        (new verifyVarsAreStatic ispec)#run ());
-      (if CheckEntry.get () || CheckAll.get () then 
-        (new onlyEntryPointsDeclaredChecker ispec)#run ());
-      (if CheckCalls.get () || CheckAll.get () then 
-        (new whiteListFunCallsChecker ispec)#run ());
-      (if CheckFunPtrs.get () || CheckAll.get () then 
-        (new noFunctionPointerChecker ispec)#run ())
-    end
+    let ispec_file = ISpecFile.get () in
+    if (ispec_file = "") then Self.feedback "No interface file provided, exiting vernfr..."
+    else
+      begin
+        let ispec = Parser_lib.Parse_ispec.parse_ispec_file ispec_file in
+        Self.feedback "Parsed ispec successfully!";
+        (if CheckStatic.get () || CheckAll.get () then   
+          (new verifyVarsAreStatic ispec)#run ());
+        (if CheckEntry.get () || CheckAll.get () then 
+          (new onlyEntryPointsDeclaredChecker ispec)#run ());
+        (if CheckCalls.get () || CheckAll.get () then 
+          (new whiteListFunCallsChecker ispec)#run ());
+        (if CheckFunPtrs.get () || CheckAll.get () then 
+          (new noFunctionPointerChecker ispec)#run ())
+      end
   else ()
 let () = Boot.Main.extend run
-
-
-
-
-

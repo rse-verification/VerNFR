@@ -13,6 +13,14 @@ module Enabled = Self.False
   let help = "when on (off by default), " ^ help_msg
 end)
 
+module ISpecFile = Self.String
+(struct
+  let option_name = "-nfr-ispec"
+  let default = ""
+  let arg_name = "ispec-file"
+  let help = "File path to interface file" 
+end)
+
 
 module CheckStatic = Self.False
 (struct

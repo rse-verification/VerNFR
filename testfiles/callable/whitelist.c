@@ -1,10 +1,9 @@
-void foo(void);
-void bar(void);
+#include "extern_defs.h"
 
 static void internal_func(void);
 
 void main() {
     foo();
-    bar();
+    int x = bar();
     internal_func();
 }

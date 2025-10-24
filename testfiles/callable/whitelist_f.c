@@ -1,18 +1,14 @@
-
-void foo(void);
-void bar(void);
-void snd_foo(void);
-int snd_bar(void);
-
+#include "extern_defs.h"
 
 static void internal_func(void);
 static void internal_int_func(int x);
-int g;
+static int g;
 
 void main() {
     foo();
     bar();
     internal_func();
+    internal_int_func(bar());
 
     //Illegal stuff
     snd_foo();
