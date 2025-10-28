@@ -1,0 +1,5 @@
+[kernel] Parsing funptr_f.c (with preprocessing)
+[nfr] Running NoFunctionPointersChecker
+[nfr] Warning: Found function call to a function pointer: *f_ptr (at funptr_f.c:16)
+[nfr] Warning: Found function call to a function pointer: *int_f_ptr (at funptr_f.c:17)
+[nfr] Warning: Found function call to a function pointer: *int_f_ptr (at funptr_f.c:19)

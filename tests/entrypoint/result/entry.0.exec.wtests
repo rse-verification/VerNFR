@@ -1,0 +1,9 @@
+{
+  "dir": "tests/entrypoint/result",
+  "info": "TEST #0 OF TEST FILE tests/entrypoint/entry.c",
+  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jesper/Documents/opensandbox/vernfr/_build/default:.\" -load-plugin=vernfr    entry.c  -vernfr -nfr-entry-check -keep-unused-functions=all -nfr-ispec entry_spec.is > \"entry.res.log\" 2> \"entry.err.log\"",
+  "out": "entry.res.log",
+  "err": "entry.err.log",
+  "oracle_out": "../oracle/entry.res.oracle",
+  "oracle_err": "../oracle/entry.err.oracle"
+}

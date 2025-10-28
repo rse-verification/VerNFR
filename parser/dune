@@ -12,7 +12,6 @@
 ; Generate the Menhir parser and OCaml lexer
 (menhir
  (modules ispec_parser)
- (flags --table --trace) 
 )
 
 (ocamllex

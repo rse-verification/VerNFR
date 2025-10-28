@@ -65,15 +65,16 @@ end
         | -> false)
   | _ -> false  *)
 (*  *)
-class noFunctionPointerChecker ispec = object 
+class noFunctionPointerChecker ispec = object (self)
   inherit genericNFRChecker ispec
 
   method name = "NoFunctionPointersChecker"
   method !vinst i = match i with 
-    | Call(_, e, _, _) -> 
+    | Call(_, e, _, loc) -> 
         (match unroll_call_exp e with
           | Some(Mem(_)) -> 
-            Self.warning "Found function call to a function pointer: %a" Printer.pp_exp e
+            self#print_error 
+              ~loc:loc (Format.asprintf "Found function call to a function pointer: %a" Printer.pp_exp e)
           | _ ->  ());
         Cil.SkipChildren
       | _ -> Cil.DoChildren

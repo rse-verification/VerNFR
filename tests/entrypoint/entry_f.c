@@ -1,0 +1,10 @@
+/* run.config
+   DEPS: entry_spec.is entry_f.h
+   STDOPT: +"-nfr-ispec entry_spec.is"
+*/
+/*This test should warn that entry_f.h declares entry point f_bar, which is not in the ispec*/
+#include "entry_f.h"
+
+void main() {
+
+}

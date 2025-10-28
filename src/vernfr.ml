@@ -33,19 +33,21 @@ let test_spec = {
 let run () = 
   if Enabled.get () then
     let ispec_file = ISpecFile.get () in
-    if (ispec_file = "") then Self.feedback "No interface file provided, exiting vernfr..."
-    else
-      begin
-        let ispec = Parser_lib.Parse_ispec.parse_ispec_file ispec_file in
+    let ispec = if (ispec_file = "") then 
+        (Self.debug ~level:3 "No interface file provided";
+        None) 
+      else  
+        (let ispec = Parser_lib.Parse_ispec.parse_ispec_file ispec_file in
         Self.feedback "Parsed ispec successfully!";
-        (if CheckStatic.get () || CheckAll.get () then   
+        Some(ispec))
+    in
+    (if CheckStatic.get () || CheckAll.get () then   
           (new verifyVarsAreStatic ispec)#run ());
-        (if CheckEntry.get () || CheckAll.get () then 
+    (if CheckEntry.get () || CheckAll.get () then 
           (new onlyEntryPointsDeclaredChecker ispec)#run ());
-        (if CheckCalls.get () || CheckAll.get () then 
+    (if CheckCalls.get () || CheckAll.get () then 
           (new whiteListFunCallsChecker ispec)#run ());
-        (if CheckFunPtrs.get () || CheckAll.get () then 
+    (if CheckFunPtrs.get () || CheckAll.get () then 
           (new noFunctionPointerChecker ispec)#run ())
-      end
-  else ()
-let () = Boot.Main.extend run
+
+    let () = Boot.Main.extend run
