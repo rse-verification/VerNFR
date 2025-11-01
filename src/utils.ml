@@ -2,6 +2,8 @@ open Cil_types
 open Parser_lib.Ispec
 open Options
 
+let vi_is_static vi = match vi.vstorage with | Static -> true | _ -> false
+
 let typ_of_base_type = function
   | Void -> Cil_const.voidType
   | Bool -> Cil_const.boolType

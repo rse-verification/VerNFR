@@ -7,7 +7,7 @@
 
 static void internal_func(void);
 
-void main() {
+void f_10ms() {
     foo();
     int x = bar();
     internal_func();

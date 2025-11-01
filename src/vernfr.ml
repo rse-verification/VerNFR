@@ -48,6 +48,7 @@ let run () =
     (if CheckCalls.get () || CheckAll.get () then 
           (new whiteListFunCallsChecker ispec)#run ());
     (if CheckFunPtrs.get () || CheckAll.get () then 
-          (new noFunctionPointerChecker ispec)#run ())
-
+          (new noFunctionPointerChecker ispec)#run ());
+    (if CheckNoDefs.get () || CheckAll.get () then 
+          (new noFunctionDefsChecker ispec)#run ())
     let () = Boot.Main.extend run

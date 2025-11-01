@@ -22,14 +22,15 @@ Checks that only the function defined as entry functions in the specifications a
 Emits a warning if this is the case.
 Does not emit a warning for functions declared with local (static) storage.
 
-### Check static
+### Check static (-nfr-static-vars)
 Emits a warning for any declared variable that is not declared with static storage.
 Note: due to normalisation, this might not work for variables that are declared but not used.
 
 
 ### Check Function pointers (-nfr-fun-ptrs)
 Emits a warning if any call is made through a function pointer.
-Note that this only checks at call sites, and does not emit warning eg if a variable is declared as function pointer.
+The check is for all expressions (which include parameters and function calls to function pointers). This is quite a crude check.
 
-
-
+# TODOS
+Validate interface specifications  
+Add rule numbers

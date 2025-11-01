@@ -8,7 +8,6 @@ class virtual genericNFRChecker ispec = object (self)
   method ispec: Parser_lib.Ispec.ispec option = ispec
 
   val unknown_loc = Cil_datatype.Location.unknown
-
   method get_ispec () = Option.get ispec
 
   method print_error ?(loc=unknown_loc) msg  = 

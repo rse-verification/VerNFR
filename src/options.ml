@@ -51,6 +51,15 @@ module CheckFunPtrs = Self.False
     to a function pointer. Verification is at call sites." 
 end)
 
+module CheckNoDefs = Self.False
+(struct
+  let option_name = "-nfr-no-hfile-defs"
+  let help = "when on (off by default), emits a warning if any function is defined in an included h-file" 
+end)
+
+
+
+
 module CheckAll = Self.False
 (struct
   let option_name = "-nfr-all"

@@ -6,6 +6,6 @@
 
 #include "entry.h"
 
-void main() {
+void f_init() {
     
 }

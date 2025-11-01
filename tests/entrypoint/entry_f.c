@@ -5,6 +5,10 @@
 /*This test should warn that entry_f.h declares entry point f_bar, which is not in the ispec*/
 #include "entry_f.h"
 
-void main() {
+int f_util(int x) {
+   return x + 1;
+}
 
+void f_init() {
+   int g = f_util(3);
 }
