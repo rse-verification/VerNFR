@@ -76,23 +76,18 @@ class noFunctionPointerChecker ispec = object (self)
 
   method name = "NoFunctionPointersChecker"
   method !vexpr e = match e.enode with 
-    | Lval(Var(vi), _) -> 
-        (match Ast_types.unroll_node vi.vtype with 
-          | TPtr(t') -> (match Ast_types.unroll_node t' with
-              | TFun(_) -> 
-                  self#print_error 
-                    ~loc:e.eloc (Format.asprintf "Found function pointer in expression: %a" Printer.pp_varinfo vi)
-              | _ -> ());
-          | _ -> ());
+    | Lval(Var(vi), _) ->
+      (if Ast_types.is_fun_ptr vi.vtype then 
+        self#print_error 
+          ~loc:e.eloc (Format.asprintf "Found expression containing \
+                        a function pointer %a" Printer.pp_varinfo vi));
         Cil.SkipChildren
     | AddrOf(Var(vi), _) -> 
-        (match Ast_types.unroll_node vi.vtype with 
-          | TFun(_) -> 
-            self#print_error 
-            ~loc:e.eloc (Format.asprintf "Found address of function in expression: %a" Printer.pp_varinfo vi)
-          | _ -> ());
+      (if Ast_types.is_fun vi.vtype then 
+        self#print_error 
+          ~loc:e.eloc (Format.asprintf "Found expression containing \
+                        the address of a function: %a" Printer.pp_varinfo vi));
         Cil.SkipChildren
-        
     | _ -> Cil.DoChildren
   (* method !vinst i = match i with 
     | Call(_, e, pexps, loc) -> 
@@ -126,3 +121,17 @@ class noFunctionDefsChecker ispec = object (self)
   **)
 
 end
+
+class noPtrArithmeticsChecker ispec = object (self)
+  inherit genericNFRChecker ispec
+  (* Change so that this always checks, so user must run it only on h-files *)
+  method name = "PtrArithmeticsChecker"
+  method !vexpr e = match e.enode with 
+    | BinOp(_, _, _, t) -> 
+        if Ast_types.is_ptr t then 
+          self#print_error
+            ~loc:e.eloc (Format.asprintf "Found pointer arithmetic expression: %a" Printer.pp_exp e);
+        Cil.DoChildren
+    | _ -> Cil.DoChildren
+
+end 

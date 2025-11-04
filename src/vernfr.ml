@@ -41,6 +41,8 @@ let run () =
         Self.feedback "Parsed ispec successfully!";
         Some(ispec))
     in
+
+    (* Check which analyses to run *)
     (if CheckStatic.get () || CheckAll.get () then   
           (new verifyVarsAreStatic ispec)#run ());
     (if CheckEntry.get () || CheckAll.get () then 
@@ -50,5 +52,11 @@ let run () =
     (if CheckFunPtrs.get () || CheckAll.get () then 
           (new noFunctionPointerChecker ispec)#run ());
     (if CheckNoDefs.get () || CheckAll.get () then 
-          (new noFunctionDefsChecker ispec)#run ())
+          (new noFunctionDefsChecker ispec)#run ());
+    (if CheckProperInit.get () || CheckAll.get () then 
+          (new properInitChecker ispec)#run ());
+    (if ChecNoPtrArith.get () || CheckAll.get () then 
+          (new noPtrArithmeticsChecker ispec)#run ())
+
+    (* add to frama-c main pipeline *)
     let () = Boot.Main.extend run

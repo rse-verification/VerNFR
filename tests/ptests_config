@@ -1,1 +1,1 @@
-DEFAULT_SUITES=callable entrypoint funptrs staticvars
+DEFAULT_SUITES=callable entrypoint funptrs staticvars initialisation

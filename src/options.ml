@@ -57,6 +57,17 @@ module CheckNoDefs = Self.False
   let help = "when on (off by default), emits a warning if any function is defined in an included h-file" 
 end)
 
+module ChecNoPtrArith = Self.False
+(struct
+  let option_name = "-nfr-ptr-arith"
+  let help = "when on (off by default), emits a warning if any pointer arithmetic is detected" 
+end)
+
+module CheckProperInit = Self.False
+(struct 
+  let option_name = "-nfr-proper-init"
+  let help = "when on (off by defualt), emits a warning if any global variable is used before being explicilty initialised"
+end)
 
 
 

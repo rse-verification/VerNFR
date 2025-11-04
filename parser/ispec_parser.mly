@@ -5,6 +5,14 @@ open Ispec_parse_error
 let raise_parse_error msg =
   let pos = Parsing.symbol_start_pos () in
   raise (SpecError (ParseError (msg, pos)))
+
+
+let decl_table : (string, ispec_decl) Hashtbl.t = Hashtbl.create 32
+let lookup_decl name =
+  match Hashtbl.find_opt decl_table name with
+  | Some d -> d
+  | None ->
+    raise_parse_error (Printf.sprintf "Unknown function name: %s" name)
 %}
 
 (* -------------------------------------------------------------------------- *)
@@ -68,7 +76,11 @@ decl_list_nonempty:
 
 decl:
     ispec_type fname LPAREN param_list RPAREN
-      { { ispec_ret_type = $1; ispec_fname = $2; ispec_params = $4 } }
+      {
+        let d = { ispec_ret_type = $1; ispec_fname = $2; ispec_params = $4 } in
+        Hashtbl.replace decl_table $2 d;
+        d
+      }
   | error { raise_parse_error "invalid function declaration syntax" }
 
 fname:
@@ -146,10 +158,8 @@ include_list:
   | include_list COMMA include_item { $1 @ [$3] }
 order_pair:
     IDENT LT IDENT {
-      let lhs = { ispec_ret_type = Base (Custom "unknown");
-                  ispec_fname = $1; ispec_params = [] } in
-      let rhs = { ispec_ret_type = Base (Custom "unknown");
-                  ispec_fname = $3; ispec_params = [] } in
+      let lhs = lookup_decl $1 in
+      let rhs = lookup_decl $3 in
       (lhs, rhs)
     }
   | error { raise_parse_error "invalid order constraint" }

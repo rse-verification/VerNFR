@@ -49,7 +49,8 @@ let rec typ_of_ispec_type t =
       { inner_typ with tattr = ("const", []) :: inner_typ.tattr } 
 
 
-let varinfo_from_ispec_decl isd = 
+(* gets corresponding vi in the file f**)
+let ispec_decl_to_cil_type isd = 
   let ret_type = typ_of_ispec_type isd.ispec_ret_type in
   let param_tuples = 
     List.map 
@@ -64,7 +65,9 @@ let varinfo_from_ispec_decl isd =
       isd.ispec_params
   in
   let ftype = Cil_const.mk_tfun ret_type (Some param_tuples) false in
-  Cil.makeGlobalVar isd.ispec_fname ftype 
+  ftype
+  (* Cil.findOrCreateFunc f isd.ispec_fname ftype *)
+    (* | None -> Cil.makeGlobalVar isd.ispec_fname ftype  *)
 
 let viEq vi1 vi2 = (Cil.areCompatibleTypes vi1.vtype vi2.vtype) && vi1.vname = vi2.vname
 let viInList vi = List.exists (fun vi' -> viEq vi vi')
@@ -77,3 +80,39 @@ let unroll_call_exp e =
         None
 
 
+let vi_to_kf_opt vi = 
+  try 
+    Some(Globals.Functions.get vi)
+  with Not_found ->
+    None
+
+module ISDSet = Set.Make(IspecDeclOrd)
+
+(* Gets predecessors wrp to call entry partial order **)
+let get_fns_called_before isd ispec =
+  Self.debug ~level:5 "gettingn predecessors for %s" (Parser_lib.Ispec.string_of_ispec_decl isd);
+  Self.debug ~level:5 "ispec: %s" (Parser_lib.Ispec.string_of_ispec ispec);
+
+  let rec isd_bfs ocs q res = 
+    match q with 
+      | [] -> 
+        res
+      | h::t -> 
+        let new_pred_fns = 
+          List.filter_map (fun oc ->
+          Self.debug ~level:5 "A: %s  B: %s" (Parser_lib.Ispec.string_of_order_constraint oc) (h.ispec_fname); 
+            match oc with 
+              | CalledBefore (fn', {ispec_fname = name; _}) 
+                when name = h.ispec_fname -> Some(fn')
+              | _ -> 
+                None
+          ) ispec.entry_order
+        in
+        let res' = ISDSet.union (ISDSet.of_list new_pred_fns) res in 
+        (* let res' = List.fold_left (fun acc isd -> ISDSet.add isd acc) res new_pred_fns in *)
+        let q' = t @ new_pred_fns in
+        isd_bfs ocs q' res'
+  in
+  let res = isd_bfs ispec.entry_order [isd] ISDSet.empty in
+  ISDSet.iter (fun x -> Self.debug ~level:5 "Result: %s" (Parser_lib.Ispec.string_of_ispec_decl x)) res;  
+  res

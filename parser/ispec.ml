@@ -75,18 +75,58 @@ let rec string_of_base_type = function
   | Struct s -> "struct " ^ s
   | Custom s -> s
 
-let rec string_of_ispec_type = function
+and string_of_ispec_type = function
   | Base b -> string_of_base_type b
   | Ptr t -> (string_of_ispec_type t) ^ "*"
   | Const t -> "const " ^ string_of_ispec_type t
 
-let string_of_ispec_param p =
+and string_of_ispec_param p =
   match p.ispec_pname with
   | Some n -> string_of_ispec_type p.ispec_ptype ^ " " ^ n
   | None -> string_of_ispec_type p.ispec_ptype
 
-let string_of_ispec_decl d =
+and string_of_ispec_decl d =
   Printf.sprintf "%s %s(%s)"
     (string_of_ispec_type d.ispec_ret_type)
     d.ispec_fname
     (String.concat ", " (List.map string_of_ispec_param d.ispec_params))
+
+and string_of_order_constraint oc = match oc with 
+  | CalledBefore(f1, f2) ->
+    Printf.sprintf "%s < %s" (string_of_ispec_decl f1) (string_of_ispec_decl f2)
+
+and string_of_include_item ii = 
+  Printf.sprintf "hfile: %s\n fns: %s"
+  ii.hfile
+  (String.concat "," (List.map string_of_ispec_decl ii.fns))
+
+
+
+and string_of_extern_calls ec =
+  Printf.sprintf "includes: %s\n call_order: %s"
+  (String.concat "," (List.map string_of_include_item ec.includes))
+  (String.concat "," (List.map string_of_order_constraint ec.call_order))
+   
+
+
+and string_of_ispec is =
+  Printf.sprintf "entry_fns: %s\n entry_order: %s\n extern_calls: %s" 
+  (String.concat "," (List.map string_of_ispec_decl is.entry_fns))
+  (String.concat "," (List.map string_of_order_constraint is.entry_order))
+  (string_of_extern_calls is.extern_calls)
+
+(** Functions operating on ispecs *)
+
+(* Order on declarations **)
+module IspecDeclOrd = struct
+  type t = ispec_decl
+  let compare a b =
+    match compare a.ispec_fname b.ispec_fname with
+    | 0 -> (match compare a.ispec_ret_type b.ispec_ret_type with
+            | 0 -> compare a.ispec_params b.ispec_params
+            | c -> c)
+    | c -> c
+end
+
+
+    

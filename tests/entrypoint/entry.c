@@ -2,7 +2,7 @@
    DEPS: entry_spec.is entry.h
    STDOPT: +"-nfr-ispec entry_spec.is"
 */
-/*This test should not yield any errors or warnings*/
+/* This test should not yield any errors or warnings */
 
 #include "entry.h"
 
