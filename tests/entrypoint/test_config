@@ -1,1 +1,0 @@
-OPT: -vernfr -nfr-entry-check -keep-unused-functions=all -main f_init

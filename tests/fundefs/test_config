@@ -1,1 +1,1 @@
-OPT: -vernfr -nfr-no-hfile-defs -keep-unused-functions=all
+OPT: -vernfr -nfr-no-fun-defs -keep-unused-functions=all

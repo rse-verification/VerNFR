@@ -8,12 +8,12 @@ static int internal_int_func(void);
 
 static void func_w_int_param(int x);
 
-
-
 void main() {
     foo();
     bar();
 
+
+    
     void (*f_ptr)(void) = internal_func;
     
     
