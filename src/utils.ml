@@ -87,9 +87,10 @@ let vi_to_kf_opt vi =
     None
 
 module ISDSet = Set.Make(IspecDeclOrd)
-
+(* module VISet: Set.S with type elt = Cil_types.varinfo ;; *)
+module VISet = Cil_datatype.Varinfo.Hptset
 (* Gets predecessors wrp to call entry partial order **)
-let get_fns_called_before isd ispec =
+let get_fns_called_before isd ispec = 
   Self.debug ~level:5 "gettingn predecessors for %s" (Parser_lib.Ispec.string_of_ispec_decl isd);
   Self.debug ~level:5 "ispec: %s" (Parser_lib.Ispec.string_of_ispec ispec);
 

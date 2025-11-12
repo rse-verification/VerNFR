@@ -45,7 +45,7 @@ let run () =
     (* Check which analyses to run *)
     (if CheckStatic.get () || CheckAll.get () then   
           (new verifyVarsAreStatic ispec)#run ());
-    (if CheckEntry.get () || CheckAll.get () then 
+    (if CheckOnlyEntries.get () || CheckAll.get () then 
           (new onlyEntryPointsDeclaredChecker ispec)#run ());
     (if CheckCalls.get () || CheckAll.get () then 
           (new whiteListFunCallsChecker ispec)#run ());
@@ -55,8 +55,12 @@ let run () =
           (new noFunctionDefsChecker ispec)#run ());
     (if CheckProperInit.get () || CheckAll.get () then 
           (new properInitChecker ispec)#run ());
+    (if CheckEntriesDeclared.get () || CheckAll.get () then 
+          (new allEntryPointsDeclaredChecker ispec)#run ());
+    (if CheckEntriesDefined.get () || CheckAll.get () then 
+          (new allEntryPointsDefinedChecker ispec)#run ());
     (if ChecNoPtrArith.get () || CheckAll.get () then 
           (new noPtrArithmeticsChecker ispec)#run ())
-
+    
     (* add to frama-c main pipeline *)
     let () = Boot.Main.extend run

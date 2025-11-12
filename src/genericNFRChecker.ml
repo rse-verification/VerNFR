@@ -12,7 +12,6 @@ class virtual genericNFRChecker ispec = object (self)
   val mutable entry_vis = None
   val mutable callable_vis = None
 
-  method get_cil_file () = Option.get cil_file
 
   method vi_from_ispec_decl isd =
     (* let typ = ispec_decl_to_cil_type isd in *)
@@ -55,16 +54,29 @@ class virtual genericNFRChecker ispec = object (self)
           (self#get_ispec ()).extern_calls.includes
       )
 
-  method get_ispec () = Option.get ispec
-
+  
   method print_error ?(loc=unknown_loc) msg =
     if loc = unknown_loc then
       Self.warning "%s" msg
     else  
       Self.warning "%s (at %a)" msg Printer.pp_location loc
 
-  method get_entry_vis () = Option.get entry_vis
-  method private get_callable_vis () = Option.get callable_vis
+  method get_ispec () = match ispec with
+    | Some(ispec') -> ispec'
+    | None -> Self.fatal "No ispec found, make sure that it is provided with the --nfr-ispec option"
+
+  method get_cil_file (): Cil_types.file = match cil_file with
+    | Some(cf) -> cf
+    | None -> Self.fatal "No cil_file found"
+
+
+  method get_entry_vis () = match entry_vis with
+    | Some(ev) -> ev
+    | None -> Self.fatal "No entry_vis found,  make sure that ispec is provided with the --nfr-ispec option"
+  
+  method private get_callable_vis () = match callable_vis with
+    | Some(cv) -> cv
+    | None -> Self.fatal "No callable_vis found,  make sure that ispec is provided with the --nfr-ispec option"
   
   method run () = 
     Self.feedback "Running %s" self#name; 

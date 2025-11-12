@@ -7,14 +7,15 @@ open Utils
 
 class onlyEntryPointsDeclaredChecker ispec = object (self)
   inherit genericNFRChecker ispec
+  (*Does not warn if declared functions are in the whitelist of external calls*)
 
   method name = "onlyEntryPointsDeclaredChecker"
   method !vglob_aux g = 
+    let callable_vis = (self#get_callable_vis ()) in 
     let entry_vis = self#get_entry_vis () in
     match g with
-      (* TODO: Check also for GFun *)
       | GFunDecl(_, vi, loc) when not(vi_is_static vi) -> 
-        (if not(viInList vi entry_vis) then 
+        (if not(viInList vi entry_vis) && not(viInList vi callable_vis) then 
           self#print_error (Format.asprintf "The function %a is declared as non-static but not in the list \
             of entry functions" Printer.pp_varinfo vi) ~loc:loc 
         else
@@ -135,3 +136,55 @@ class noPtrArithmeticsChecker ispec = object (self)
     | _ -> Cil.DoChildren
 
 end 
+
+class allEntryPointsDeclaredChecker ispec = object (self)  
+  inherit genericNFRChecker ispec
+  
+  method name = "AllEntryPointsDeclaredChecker"
+  method !vfile f = 
+    let prog_decls = List.filter_map 
+      (fun g -> match g with
+        | GFunDecl(_, vi, _) -> Some(vi)
+        | _ -> None 
+      ) f.globals
+    in
+    let entry_decls = List.map self#vi_from_ispec_decl (self#get_ispec ()).entry_fns in
+    let not_declared = 
+      VISet.diff (VISet.of_list entry_decls) (VISet.of_list prog_decls) 
+    in
+    (if VISet.is_empty not_declared then Self.feedback "all specified entry points are declared"
+    else
+      VISet.iter 
+        (fun vi -> self#print_error ~loc:unknown_loc 
+          (Format.asprintf "The specified entry point %a is not declared"
+          Printer.pp_varinfo vi))
+        not_declared);
+    Cil.SkipChildren
+end
+
+class allEntryPointsDefinedChecker ispec = object (self)  
+  inherit genericNFRChecker ispec
+  
+  method name = "AllEntryPointsDefinedChecker"
+  method !vfile f = 
+    let prog_defs = List.filter_map 
+      (fun g -> match g with
+        | GFun(fd, _) -> Some(fd)
+        | _ -> None 
+      ) f.globals
+    in
+    let entry_decls = List.map self#vi_from_ispec_decl (self#get_ispec ()).entry_fns in
+    let not_defined = 
+      VISet.diff 
+        (VISet.of_list entry_decls) 
+        (VISet.of_list (List.map (fun fd -> fd.svar) prog_defs)) 
+    in
+    (if VISet.is_empty not_defined then Self.feedback "all specified entry points are defined"
+    else
+      VISet.iter 
+        (fun vi -> self#print_error ~loc:unknown_loc 
+          (Format.asprintf "The specified entry point %a is not defined"
+          Printer.pp_varinfo vi))
+        not_defined);
+    Cil.SkipChildren
+end

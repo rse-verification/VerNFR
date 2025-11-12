@@ -28,9 +28,9 @@ module CheckStatic = Self.False
   let help = "when on (off by default), emits a warning if a global variable does not have static storage" 
 end)
 
-module CheckEntry = Self.False
+module CheckOnlyEntries = Self.False
 (struct
-  let option_name = "-nfr-entry-check"
+  let option_name = "-nfr-only-entries"
   let help = "when on (off by default), emits a warning if function is declared that is not in the \
     list of entry-point functions in the specification. This option SHOULD ALWAYS be used in combination with the \
     frama-c kernel option '-keep-unused-functions all'" 
@@ -53,7 +53,7 @@ end)
 
 module CheckNoDefs = Self.False
 (struct
-  let option_name = "-nfr-no-hfile-defs"
+  let option_name = "-nfr-no-fun-defs"
   let help = "when on (off by default), emits a warning if any function is defined in an included h-file" 
 end)
 
@@ -69,6 +69,22 @@ module CheckProperInit = Self.False
   let help = "when on (off by defualt), emits a warning if any global variable is used before being explicilty initialised"
 end)
 
+
+module CheckEntriesDeclared = Self.False 
+(struct 
+  let option_name = "-nfr-all-entries-declared"
+  let help = "when on (off by defualt), emits a warning if not all entrypoints\
+     in the ispec file are declared\
+     (intended to be used for a header file)"
+end)
+
+module CheckEntriesDefined = Self.False 
+(struct 
+  let option_name = "-nfr-all-entries-defined"
+  let help = "when on (off by defualt), emits a warning if not all entrypoints\
+     in the ispec file are defined\
+     (intended to be used for a C file)"
+end)
 
 
 module CheckAll = Self.False
