@@ -19,6 +19,22 @@ class verifyVarsAreStatic ispec = object (self)
     in
     Cil.SkipChildren
 end
+class ptrLiteralsChecker ispec = object (self)
+  inherit genericNFRChecker ispec
+
+  method name = "PointerLitealsChecker"
+
+  method !vexpr (e: Cil_types.exp) = 
+    (match e.enode with 
+      | CastE(t, e') when Ast_types.is_ptr t -> 
+        (match e'.enode with
+          | Const(CInt64(_)) -> self#print_error ~loc:e.eloc 
+              (Format.asprintf "Detected pointer literal %a" Printer.pp_exp e')
+          | _ -> Self.debug ~level:3 "detected cast from non-integer constant to pointer type"
+        )
+      | _ -> ());
+    Cil.SkipChildren
+end
 
 class properInitChecker ispec = object (self)
   inherit genericNFRChecker ispec
@@ -39,9 +55,25 @@ class properInitChecker ispec = object (self)
       (fst (Kernel_function.get_name actual_entry)) 
       (snd actual entry);
     iomap *)
-
+    (* calls eva with each function as entry point. temporarily redirects stdout to logfile to 
+     avoid flooding stdin with eva results *)
+    method get_all_inouts () = 
+    (*Redirect stdout*)
+      let (entry_kf, lib_entry) = Globals.entry_point () in
+      let all_inouts = 
+        Globals.Functions.fold 
+          (fun kf acc -> 
+            Self.debug ~level:4 "Eva anlysis of %s" (Kernel_function.get_name kf);
+            Globals.set_entry_point (Kernel_function.get_name kf) lib_entry;
+            Utils.exec_with_redirected_stdout (NfrLogFile.get ()) Eva.Analysis.compute;
+            
+            Kernel_function.Map.add kf (Inout.get_precise_inout kf) acc
+          )
+          Kernel_function.Map.empty
+      in
+      Globals.set_entry_point (Kernel_function.get_name entry_kf) lib_entry;
+      all_inouts
   method !vfile f = 
-    (* Ast.compute (); *)
     let ispec = Option.get self#ispec in
     let no_init_vars = List.fold_left
       (fun acc g -> match g with 
@@ -52,11 +84,8 @@ class properInitChecker ispec = object (self)
       f.globals 
     in
     Self.feedback "getting inouts next";
-    let all_inouts = 
-      Globals.Functions.fold 
-        (fun kf acc -> Kernel_function.Map.add kf (Inout.kf_external_outputs kf) acc)
-        Kernel_function.Map.empty
-    in
+    let all_inouts = self#get_all_inouts () in
+
     let check_fn isd =  
       let entry_vi = self#vi_from_ispec_decl isd in
       match Utils.vi_to_kf_opt entry_vi with
@@ -72,12 +101,14 @@ class properInitChecker ispec = object (self)
         let pred_kfs = List.filter_map Utils.vi_to_kf_opt pred_vis in
         let pred_outs = List.fold_left
           (fun acc kf -> Locations.Zone.join 
-            (Kernel_function.Map.find kf all_inouts) acc)
+            (Kernel_function.Map.find kf all_inouts).over_outputs acc)
           Locations.Zone.bottom
           pred_kfs
         in
         (*Get current entry points inputs*)
-        let entry_ins = Inout.kf_external_inputs entry_kf in
+        
+        let entry_ins = (Kernel_function.Map.find entry_kf all_inouts).over_inputs in
+        Self.debug ~level:4 "e_ins: %a" Locations.Zone.pretty entry_ins;
         (* we start with the global vars without explicit init, then we remove all 
           outputs for predecessor functions, and then take the intersection with the current entry
         *)

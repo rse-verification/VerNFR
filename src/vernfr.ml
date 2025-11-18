@@ -42,6 +42,9 @@ let run () =
         Some(ispec))
     in
 
+    let log_file = NfrLogFile.get () in
+    if Sys.file_exists log_file then Sys.remove log_file;
+
     (* Check which analyses to run *)
     (if CheckStatic.get () || CheckAll.get () then   
           (new verifyVarsAreStatic ispec)#run ());
@@ -59,6 +62,8 @@ let run () =
           (new allEntryPointsDeclaredChecker ispec)#run ());
     (if CheckEntriesDefined.get () || CheckAll.get () then 
           (new allEntryPointsDefinedChecker ispec)#run ());
+    (if CheckPtrLiterals.get () || CheckAll.get () then 
+          (new ptrLiteralsChecker ispec)#run ());
     (if ChecNoPtrArith.get () || CheckAll.get () then 
           (new noPtrArithmeticsChecker ispec)#run ())
     

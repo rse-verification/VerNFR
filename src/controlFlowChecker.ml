@@ -12,10 +12,16 @@ class onlyEntryPointsDeclaredChecker ispec = object (self)
   method name = "onlyEntryPointsDeclaredChecker"
   method !vglob_aux g = 
     let callable_vis = (self#get_callable_vis ()) in 
+    let hfile_deps = self#get_hfile_deps () in
     let entry_vis = self#get_entry_vis () in
+    let is_bad_decl vi loc = 
+      not(viInList vi entry_vis) &&
+      not(viInList vi callable_vis) &&
+      not(List.mem (loc_to_fname loc) hfile_deps)
+    in
     match g with
       | GFunDecl(_, vi, loc) when not(vi_is_static vi) -> 
-        (if not(viInList vi entry_vis) && not(viInList vi callable_vis) then 
+        (if is_bad_decl vi loc then 
           self#print_error (Format.asprintf "The function %a is declared as non-static but not in the list \
             of entry functions" Printer.pp_varinfo vi) ~loc:loc 
         else

@@ -44,18 +44,18 @@ let lookup_decl name =
 
 spec:
     MODULE IDENT LBRACE
-      ENTRY_FUNCTIONS COLON LBRACE decl_list RBRACE COMMA
-      ENTRY_ORDER COLON LBRACE order_list RBRACE COMMA
-      EXTERNAL_CALLS COLON LBRACE include_list RBRACE COMMA
+      ENTRY_FUNCTIONS COLON LBRACE decl_list RBRACE
+      ENTRY_ORDER COLON LBRACE order_list RBRACE
+      EXTERNAL_CALLS COLON LBRACE include_list RBRACE
       EXTERNAL_CALL_ORDER COLON LBRACE order_list RBRACE
     RBRACE EOF
     {
       {
         entry_fns = $7;
-        entry_order = List.map (fun (a,b) -> CalledBefore (a,b)) $13;
+        entry_order = List.map (fun (a,b) -> CalledBefore (a,b)) $12;
         extern_calls = {
-          includes = $19;
-          call_order = List.map (fun (a,b) -> CalledBefore (a,b)) $25
+          includes = $17;
+          call_order = List.map (fun (a,b) -> CalledBefore (a,b)) $22
         };
       }
     }

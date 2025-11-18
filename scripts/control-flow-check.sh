@@ -5,7 +5,7 @@ set -e
 
 # Function to show usage
 usage() {
-    echo "Usage: $0 --code <file.c> --header <file.h> --ispec <file.is> --main <main_function_name>"
+    echo "Usage: $0 --folder <path> --modname <module_name> --main <main_function_name>"
     exit 1
 }
 
@@ -14,16 +14,12 @@ MAIN="main"
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --code)
-            C_FILE="$2"
+        --modname)
+            MODNAME="$2"
             shift 2
             ;;
-        --header)
-            H_FILE="$2"
-            shift 2
-            ;;
-        --ispec)
-            ISPEC_FILE="$2"
+        --folder)
+            FOLDER="$2"
             shift 2
             ;;
         --main)
@@ -38,10 +34,14 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check that all files are provided
-if [ -z "$C_FILE" ] || [ -z "$H_FILE" ] || [ -z "$ISPEC_FILE" ]; then
+if [ -z "$MODNAME" ] || [ -z "$FOLDER" ]; then
     echo "Error: Missing required parameters."
     usage
 fi
+
+H_FILE="$FOLDER/$MODNAME.h"
+C_FILE="$FOLDER/$MODNAME.c"
+ISPEC_FILE="$FOLDER/$MODNAME.is"
 
 # Verify that files exist
 for f in "$C_FILE" "$H_FILE" "$ISPEC_FILE"; do

@@ -9,16 +9,16 @@
 
 (* --- regex definitions --- *)
 let ws     = [' ' '\t' '\r' '\n']+
-let ident  = ['A'-'Z' 'a'-'z' '_' '0'-'9']+
+let ident  = ['A'-'Z' 'a'-'z' '_' '0'-'9' '.']+
 
 rule token = parse
   | ws { token lexbuf }                            (* skip whitespace *)
 
-  | "@Module"               { MODULE }
-  | "@entry_functions"      { ENTRY_FUNCTIONS }
-  | "@entry_order"          { ENTRY_ORDER }
-  | "@external_calls"       { EXTERNAL_CALLS }
-  | "@external_call_order"  { EXTERNAL_CALL_ORDER }
+  | "Module"               { MODULE }
+  | "entry_functions"      { ENTRY_FUNCTIONS }
+  | "entry_order"          { ENTRY_ORDER }
+  | "external_calls"       { EXTERNAL_CALLS }
+  | "external_call_order"  { EXTERNAL_CALL_ORDER }
 
   | "{"                    { LBRACE }
   | "}"                    { RBRACE }

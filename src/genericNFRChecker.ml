@@ -57,7 +57,7 @@ class virtual genericNFRChecker ispec = object (self)
   
   method print_error ?(loc=unknown_loc) msg =
     if loc = unknown_loc then
-      Self.warning "%s" msg
+      Self.warning "%s" msg 
     else  
       Self.warning "%s (at %a)" msg Printer.pp_location loc
 
@@ -78,6 +78,9 @@ class virtual genericNFRChecker ispec = object (self)
     | Some(cv) -> cv
     | None -> Self.fatal "No callable_vis found,  make sure that ispec is provided with the --nfr-ispec option"
   
+  method get_hfile_deps () = 
+    List.map (fun inc -> inc.hfile) (self#get_ispec ()).extern_calls.includes
+
   method run () = 
     Self.feedback "Running %s" self#name; 
     cil_file <- Some(Ast.get ());

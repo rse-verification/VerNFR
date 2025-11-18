@@ -117,3 +117,31 @@ let get_fns_called_before isd ispec =
   let res = isd_bfs ispec.entry_order [isd] ISDSet.empty in
   ISDSet.iter (fun x -> Self.debug ~level:5 "Result: %s" (Parser_lib.Ispec.string_of_ispec_decl x)) res;  
   res
+
+
+let loc_to_fname (loc: Filepath.position * Filepath.position) = 
+  Filepath.basename (fst loc).pos_path
+
+
+let exec_with_redirected_stdout log_file f =
+  let open Unix in
+  (* Open the output file *)
+  let fd_log = openfile log_file [O_WRONLY; O_CREAT; O_APPEND] 0o644 in
+
+  (* Duplicate current stdout so we can restore it later *)
+  let fd_stdout_copy = dup stdout in
+
+  (* Redirect stdout to the log file *)
+  dup2 fd_log stdout;
+
+  (* Close the file descriptor (stdout now points to it) *)
+  close fd_log;
+
+  Self.feedback "Running with redirected stdout";
+  Fun.protect
+    ~finally:(fun () ->
+      (* Restore original stdout *)
+      dup2 fd_stdout_copy stdout;
+      close fd_stdout_copy
+    )
+    f
