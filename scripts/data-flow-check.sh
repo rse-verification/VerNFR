@@ -78,5 +78,11 @@ echo "Checking rule R7 (Not rely on default zero-init for global vars)"
 frama-c -vernfr -nfr-proper-init -nfr-ispec "$ISPEC_FILE" -main "simp_10ms" "$C_FILE"
 echo "###########################################"
 
+echo ""
+echo "###########################################"
+echo "Checking rule R8 (No pointer literals)"
+frama-c -vernfr -nfr-check-ptr-literals -main "simp_10ms" "$C_FILE"
+echo "###########################################"
+
 
 echo "Done!"
