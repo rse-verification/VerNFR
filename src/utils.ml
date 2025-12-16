@@ -4,7 +4,8 @@ open Options
 
 let vi_is_static vi = match vi.vstorage with | Static -> true | _ -> false
 
-let typ_of_base_type = function
+
+let typ_of_base_type t = match t with
   | Void -> Cil_const.voidType
   | Bool -> Cil_const.boolType
   | Char -> Cil_const.charType
@@ -32,10 +33,16 @@ let typ_of_base_type = function
       (* Lookup or create a compinfo for this struct *)
       let ci = Cil_const.mkCompInfo ~cstruct:true name [] in
       { tnode = TComp ci; tattr = [] } *)
-  (* | Custom name ->
+  | Custom name ->
       (* Lookup a typedef typeinfo by name, or create a placeholder *)
-      let ti = Cil_const.mkTypeInfo name (typ_of_base_type Int) in
-      { tnode = TNamed ti; tattr = [] } *)
+      (try
+        Globals.Types.find_type Logic_typing.Typedef name
+      with 
+        | _ -> Self.debug ~level:2 "type not found: %s, making a dummy type" name;
+               let ti = {torig_name = name; tname = name; 
+                         ttype = Cil_const.voidType; treferenced = false} in
+               Cil_const.mk_tnamed ti         
+      )
   | _ -> Kernel.fatal "not yet implemented"
 
 let rec typ_of_ispec_type t =

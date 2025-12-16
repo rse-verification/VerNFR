@@ -37,7 +37,8 @@ let run () =
         (Self.debug ~level:3 "No interface file provided";
         None) 
       else  
-        (let ispec = Parser_lib.Parse_ispec.parse_ispec_file ispec_file in
+        (
+        let ispec = Parser_lib.Parse_ispec.parse_ispec_file ispec_file in
         Self.feedback "Parsed ispec successfully!";
         Some(ispec))
     in
