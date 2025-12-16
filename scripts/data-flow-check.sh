@@ -81,7 +81,7 @@ echo "###########################################"
 echo ""
 echo "###########################################"
 echo "Checking rule R8 (No pointer literals)"
-frama-c -vernfr -nfr-check-ptr-literals -main "simp_10ms" "$C_FILE"
+frama-c -vernfr -nfr-check-ptr-literals -main "$MAIN" "$C_FILE"
 echo "###########################################"
 
 
