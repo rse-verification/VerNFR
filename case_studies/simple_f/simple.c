@@ -36,6 +36,10 @@ void simp_10ms() {
     else fun_ptr = internal_func2;
     
     g2 = fun_ptr();
+
+    int *p;
+    p = 0x32;
+    g = g + *p;
     
     write_g(g);
     write_g2(g2);
