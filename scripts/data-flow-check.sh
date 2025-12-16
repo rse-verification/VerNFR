@@ -68,14 +68,14 @@ echo "Processing files..."
 echo ""
 echo "###########################################"
 echo "Checking rule R1 (only callable functions called)"
-frama-c -vernfr -nfr-static-vars -main "simp_10ms" "$C_FILE"
+frama-c -vernfr -nfr-static-vars -main "$MAIN" "$C_FILE"
 echo "###########################################"
 
 
 echo ""
 echo "###########################################"
 echo "Checking rule R7 (Not rely on default zero-init for global vars)"
-frama-c -vernfr -nfr-proper-init -nfr-ispec "$ISPEC_FILE" -main "simp_10ms" "$C_FILE"
+frama-c -vernfr -nfr-proper-init -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
 echo "###########################################"
 
 
