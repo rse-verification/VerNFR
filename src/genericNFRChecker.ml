@@ -78,6 +78,12 @@ class virtual genericNFRChecker ispec = object (self)
     | Some(cv) -> cv
     | None -> Self.fatal "No callable_vis found,  make sure that ispec is provided with the --nfr-ispec option"
   
+  method get_module_name () = 
+      (self#get_ispec ()).module_name
+  method file_is_this_module fname =
+    let this_fname = self#get_module_name () in
+    (this_fname ^ ".c" = fname) || (this_fname ^ ".h" = fname) 
+    
   method get_hfile_deps () = 
     List.map (fun inc -> inc.hfile) (self#get_ispec ()).extern_calls.includes
 

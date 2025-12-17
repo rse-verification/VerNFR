@@ -51,6 +51,7 @@ spec:
     RBRACE EOF
     {
       {
+        module_name = $2;
         entry_fns = $7;
         entry_order = List.map (fun (a,b) -> CalledBefore (a,b)) $12;
         extern_calls = {

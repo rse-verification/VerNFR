@@ -49,6 +49,7 @@ type extern_calls = {
 }
 
 type ispec = {
+  module_name : string;
   entry_fns : ispec_decl list;
   entry_order : order_constraint list;
   extern_calls : extern_calls;
