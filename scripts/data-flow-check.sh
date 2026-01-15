@@ -67,8 +67,8 @@ echo "Processing files..."
 
 echo ""
 echo "###########################################"
-echo "Checking rule R1 (only callable functions called)"
-frama-c -vernfr -nfr-static-vars -main "$MAIN" "$C_FILE"
+echo "Checking rule ?? (only static vars in the module)"
+frama-c -vernfr -nfr-static-vars -main "$MAIN" "$C_FILE" -nfr-ispec "$ISPEC_FILE"
 echo "###########################################"
 
 
