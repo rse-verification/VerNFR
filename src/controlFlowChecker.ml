@@ -46,6 +46,8 @@ class whiteListFunCallsChecker ispec = object (self)
   method name = "whiteListFunCallsChecker"
 
   method private check_vi ?(loc = unknown_loc) vi =  
+    Self.debug ~level:6 "%a" Format.pp_print_bool  (vi_is_static vi) ;
+
     if not(vi_is_static vi) && not(viInList vi (self#get_callable_vis ()))  then 
       self#print_error ~loc:loc (Format.asprintf "Function call to %a, which is not in the whitelist" 
         Printer.pp_varinfo vi)
@@ -55,12 +57,11 @@ class whiteListFunCallsChecker ispec = object (self)
     
   method !vinst i = 
     match i with 
-      | Call(_, e, _, loc) -> 
-        (match unroll_call_exp e with
-          | Some(Var(vi)) -> self#check_vi ~loc:loc vi
-          | Some(Mem(_)) -> 
-            Self.debug ~level:3 "mem lval in call exp: %a" Printer.pp_exp e
-          | _ ->  ());
+      | Call(_, lh, _, loc) -> 
+        (match lh with
+          | Var(vi) -> self#check_vi ~loc:loc vi
+          | Mem(_) -> 
+            Self.debug ~level:3 "mem lval in call exp: %a" Printer.pp_lhost lh);
         Cil.SkipChildren
       (* | Set()
         Cil.SkipChildren *)
