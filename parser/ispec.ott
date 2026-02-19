@@ -44,4 +44,4 @@ terminals :: terminals_ ::=
 | entry_functions :: :: entry_functions {{ tex \texttt{entry\_functions} }}
 | entry_order :: :: entry_order {{ tex \texttt{entry\_order} }}
 | external_calls :: :: external_calls {{ tex \texttt{external\_calls} }}
-
+| external_call_order :: :: external_call_order {{ tex \texttt{external\_call\_order} }}
