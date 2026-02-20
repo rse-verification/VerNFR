@@ -1,4 +1,4 @@
-Module m1 {
+module m1 {
   entry_functions: { 
     void simp_init(void), void simp_10ms(void)
   }
@@ -10,4 +10,7 @@ Module m1 {
     mod2.h: {void mod2_foo(int *p)}
   }
   external_call_order: { }
+  enforced_types: mod1.h {
+    
+  }
 }

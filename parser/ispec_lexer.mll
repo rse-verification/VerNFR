@@ -14,7 +14,7 @@ let ident  = ['A'-'Z' 'a'-'z' '_' '0'-'9' '.']+
 rule token = parse
   | ws { token lexbuf }                            (* skip whitespace *)
 
-  | "Module"               { MODULE }
+  | "module"               { MODULE }
   | "entry_functions"      { ENTRY_FUNCTIONS }
   | "entry_order"          { ENTRY_ORDER }
   | "external_calls"       { EXTERNAL_CALLS }

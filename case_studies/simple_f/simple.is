@@ -1,4 +1,4 @@
-Module m1 {
+module m1 {
   entry_functions: { 
     void simp_init(void), void simp_10ms(void)
   }
