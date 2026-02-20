@@ -35,6 +35,12 @@ module ISpecFile = Self.String
 end)
 
 
+module CheckTypedefs = Self.False
+(struct
+  let option_name = "-nfr-typedefs"
+  let help = "when on (off by default), emits a warning if a 'raw' type is used instead of a typedef, whenever a typedef exists" 
+end)
+
 module CheckStatic = Self.False
 (struct
   let option_name = "-nfr-static-vars"

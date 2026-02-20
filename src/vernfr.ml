@@ -66,7 +66,9 @@ let run () =
     (if CheckPtrLiterals.get () || CheckAll.get () then 
           (new ptrLiteralsChecker ispec)#run ());
     (if ChecNoPtrArith.get () || CheckAll.get () then 
-          (new noPtrArithmeticsChecker ispec)#run ())
-    
+          (new noPtrArithmeticsChecker ispec)#run ());
+    (if CheckTypedefs.get () || CheckAll.get () then 
+          (new typeDefChecker ispec)#run ())
+
     (* add to frama-c main pipeline *)
     let () = Boot.Main.extend run

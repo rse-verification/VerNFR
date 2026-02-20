@@ -132,3 +132,68 @@ class properInitChecker ispec = object (self)
 
     (* TODO:Continue here//;;; *)
 end
+
+class typeDefChecker ispec = object (self)
+  inherit genericNFRChecker ispec
+
+  method name = "TypeDefChecker"
+  val mutable typedefs = []
+
+  method print_typedef_error  ?(loc=unknown_loc) x t ti = 
+    self#print_error 
+      ~loc:loc 
+      (Format.asprintf  "%s uses type %a instead of the defined typedef %s"
+        x 
+        Printer.pp_typ t
+        ti.tname
+      )
+  
+  method get_typedef t = 
+    List.find_opt (fun ti -> ti.ttype = t) typedefs
+
+  method !vfile f = 
+    typedefs <- List.filter_map (fun g -> match g with | GType(ti, _) -> Some(ti) | _ -> None) f.globals;
+    List.iter (fun ti -> Self.feedback "%s -- %a" ti.tname Printer.pp_typ ti.ttype) typedefs;
+    Cil.DoChildren
+  
+  method !vglob_aux g = (match g with 
+    | GVar(vi, _, loc) | GVarDecl(vi, loc) -> 
+      (match self#get_typedef vi.vtype with 
+        | Some(ti) -> self#print_typedef_error ~loc:loc ("The variable " ^ vi.vname) vi.vtype ti 
+        | None -> Self.debug ~level:5 "No typedefs for %a" Printer.pp_varinfo vi)
+    | GFunDecl (_, vi, loc)  -> 
+      (match self#get_typedef (Cil.getReturnType vi.vtype) with 
+        | Some(ti) -> 
+            self#print_typedef_error ~loc:loc ("The function " ^ vi.vname) vi.vtype ti 
+        | None -> Self.debug ~level:5 "No typedefs for %a" Printer.pp_varinfo vi)
+    | _ -> ()); 
+    Cil.DoChildren
+  
+  method !vfunc fd = 
+    (match self#get_typedef (Cil.getReturnType fd.svar.vtype) with 
+      | Some(ti) -> self#print_typedef_error ("The function " ^ fd.svar.vname) fd.svar.vtype ti 
+      | None -> Self.debug ~level:5 "No typedefs for %a" Printer.pp_varinfo fd.svar);
+    List.iter 
+      (fun vi -> match self#get_typedef vi.vtype with 
+        | Some(ti) -> self#print_typedef_error ("In function " ^ fd.svar.vname ^ ", the variable " ^ vi.vname ) vi.vtype ti
+        | None -> Self.debug ~level:5 "No typedefs for %a" Printer.pp_varinfo vi)
+      (fd.slocals @ fd.sformals);
+    Cil.DoChildren
+      (* List.iter fd.svars *)
+  
+  method !vfieldinfo fi = 
+    (match self#get_typedef fi.ftype with 
+      | Some(ti) -> self#print_typedef_error ~loc:fi.floc ("In struct " ^ fi.fcomp.cname ^ ", the field " ^ fi.fname) fi.ftype ti 
+      | None -> Self.debug ~level:5 "No typedefs for field %s in struct %s" fi.fname fi.fcomp.cname);
+    Cil.DoChildren
+  method !vexpr e = 
+    match e.enode with 
+      | CastE(t, _) -> 
+        (match self#get_typedef t with 
+          | Some(ti) -> self#print_typedef_error ~loc:e.eloc "Cast" t ti 
+          | None -> Self.debug ~level:5 "Cast does not use typedef for type %a" Printer.pp_typ t);
+          Cil.SkipChildren
+      | _ -> Cil.SkipChildren
+
+
+end
