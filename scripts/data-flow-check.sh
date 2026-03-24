@@ -67,7 +67,7 @@ echo "Processing files..."
 
 echo ""
 echo "###########################################"
-echo "Checking rule ?? (only static vars in the module)"
+echo "Checking rule R1 (only static vars in the module)"
 frama-c -vernfr -nfr-static-vars -main "$MAIN" "$C_FILE" -nfr-ispec "$ISPEC_FILE"
 echo "###########################################"
 
@@ -82,6 +82,12 @@ echo ""
 echo "###########################################"
 echo "Checking rule R8 (No pointer literals)"
 frama-c -vernfr -nfr-check-ptr-literals -main "$MAIN" "$C_FILE"
+echo "###########################################"
+
+echo ""
+echo "###########################################"
+echo "Checking rule R9 (Using defined types)"
+frama-c -vernfr -nfr-typedefs -main "$MAIN" "$C_FILE"
 echo "###########################################"
 
 

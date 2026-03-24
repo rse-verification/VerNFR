@@ -85,7 +85,7 @@ echo "###########################################"
 
 echo ""
 echo "###########################################"
-echo "Checking rule R3b (only include h-files)"
+echo "Checking rule R4 (only include h-files)"
 matches=$(grep -nE '#\s*include\s*["<][^">]+\.c[">]' "$C_FILE" || true)
 
 if [[ -n "$matches" ]]; then
@@ -95,14 +95,14 @@ echo "###########################################"
 
 echo ""
 echo "###########################################"
-echo "Checking rule R4 check that all entry-points are declared and defined"
+echo "Checking rule R5 check that all entry-points are declared and defined"
 frama-c -vernfr -nfr-all-entries-declared -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$H_FILE"
 frama-c -vernfr -nfr-all-entries-defined -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
 echo "###########################################"
 
 echo ""
 echo "###########################################"
-echo "Checking rule R4b check that only entry-points are declared as non-static"
+echo "Checking rule R6 check that only entry-points are declared as non-static"
 frama-c -vernfr -nfr-only-entries -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
 echo "###########################################"
 
