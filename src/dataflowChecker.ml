@@ -10,7 +10,7 @@ class verifyVarsAreStatic ispec = object (self)
 
   method !vglob_aux (g: Cil_types.global) = 
     let () = match g with 
-      | GVar(vi, _, loc) | GVarDecl(vi, loc) ->
+      | GVar(vi, _, loc) | GVarDecl(vi, loc) when vi.vghost = false ->
         (match vi.vstorage with 
           | Static -> Self.debug ~level:3 "Variable %a has static storage" Printer.pp_varinfo vi
           | _ -> self#print_error 
@@ -149,11 +149,10 @@ class typeDefChecker ispec = object (self)
       )
   
   method get_typedef t = 
-    List.find_opt (fun ti -> ti.ttype = t) typedefs
+    List.find_opt (fun ti -> Cil_datatype.TypByName.equal ti.ttype t) typedefs
 
   method !vfile f = 
     typedefs <- List.filter_map (fun g -> match g with | GType(ti, _) -> Some(ti) | _ -> None) f.globals;
-    List.iter (fun ti -> Self.feedback "%s -- %a" ti.tname Printer.pp_typ ti.ttype) typedefs;
     Cil.DoChildren
   
   method !vglob_aux g = (match g with 
@@ -186,14 +185,14 @@ class typeDefChecker ispec = object (self)
       | Some(ti) -> self#print_typedef_error ~loc:fi.floc ("In struct " ^ fi.fcomp.cname ^ ", the field " ^ fi.fname) fi.ftype ti 
       | None -> Self.debug ~level:5 "No typedefs for field %s in struct %s" fi.fname fi.fcomp.cname);
     Cil.DoChildren
-  method !vexpr e = 
+  (* method !vexpr e = 
     match e.enode with 
       | CastE(t, _) -> 
         (match self#get_typedef t with 
           | Some(ti) -> self#print_typedef_error ~loc:e.eloc "Cast" t ti 
           | None -> Self.debug ~level:5 "Cast does not use typedef for type %a" Printer.pp_typ t);
           Cil.SkipChildren
-      | _ -> Cil.SkipChildren
+      | _ -> Cil.SkipChildren *)
 
 
 end
