@@ -99,6 +99,7 @@ ispec_type:
 pointer_type:
     base_type               { Base $1 }
   | pointer_type STAR       { Ptr $1 }
+  | pointer_type STAR CONST       { Ptr (Const $1) }
 
 base_type:
     VOID          { Void }
