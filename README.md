@@ -2,42 +2,50 @@
 Verification of Non-Functional Requirements (NFR)
 
 ## Testing
-To test, there is the test script testscript.sh
-Currently, it uses the test-spec defined in vernfr.ml
+Regressions testing using frama-c-ptests utility. run `dune build @tests`
 
 ## Building
-to build run 'dune build @install' and 'dune install' from root folder
+to build run `dune build @install` and `dune install` from root folder
 
-## Checks
-The following nfr checks are available:
+## Verification
+VerNFR takes as input a module consisting of a c-file and an h-file, and an interface contract (is-file).
+The script scripts/all-checks.sh runs the following tasks:
 
-### Check outgoing calls (-nfr-check-calls)
-Checks that all outgoing calls to other modules are defined as allowed in the interface specification.
-Emits a warning if this is the case.
-The checks are implemented for call instructions, and local initialisations with function calls.
-Does not emit warning if the function has local (static) storage.
+T1: External function calls adheres to the is-file whitelist.  
+T2: Absence of function pointers.  
+T3: No function definitions in h-file.  
+T4: Only h-files are included.      
+T5: All entry points in the is-file are declared.    
+T6: All entry points in the is-file are defined.     
+T7: Non-entry points are declared in the c-file with static storage specifier
+T8: Variables have static storage-specifier.  
+T9: All memory locations are explicitly initialized or written to before they are read.    
+T10: Absence of pointer literals.    
+T11: Typedefs are always used when possible.  
 
-### Check entry (-nfr-entry-check) 
-Checks that only the function defined as entry functions in the specifications are declared.
-Emits a warning if this is the case.
-Does not emit a warning for functions declared with local (static) storage.
-
-### Check fun defs (-nfr-fun-defs)
-Emits a warning if a function definition is detected, intended to be used for header files.
-
-### Check static (-nfr-static-vars)
-Emits a warning for any declared variable that is not declared with static storage.
-Note: due to normalisation, this might not work for variables that are declared but not used.
+To run the script: `./scripts/all-checks.sh --modname <name> --folder <folder_path>`  
+where the module file names are `<folder_path>/<name>.c`, `<folder_path>/<name>.h`, and `<folder_path>/<name>.is`
 
 
-### Check Function pointers (-nfr-fun-ptrs)
-Emits a warning if any call is made through a function pointer.
-The check is for all expressions (which include parameters and function calls to function pointers). This is quite a crude check.
+Each task can also be run directly in Frama-C, see `frama-c -nfr-h` for guidance.
 
-### Check explicit initialisation (-nfr-proper-init)
-Emits a warning if global variable is used without either explicit initalisation or being assigned to before the first usage. Takes into account the call order defined for entry functions in the ispec 
-NOTE: Does not afaik consider assignments in external calls. It is still sound but if a variable is assigned to through a pointer in an external call, we might emit spurious warning.
 
-# TODOS
-Validate interface specifications  
-Add rule numbers
+## Syntax IS-file 
+The is-file the following syntax. See also examples in `tests`
+
+InterfaceContract ::= "module" id
+                      entry_points
+                      entry_order
+                      external_calls
+                      external_order
+
+entry_points ::= "entry_functions" FunDecl*
+entry_order  ::= "entry_order" OrderConstraint*
+
+external_calls ::= "external_calls" extmodule*
+extmodule      ::= id FunDecl*
+
+external_order ::= "external_order" OrderConstraint*
+
+OrderConstraint ::= LT(id, id)
+                  | GT(id, id)
