@@ -5,11 +5,11 @@ set -e
 
 # Function to show usage
 usage() {
-    echo "Usage: $0 --folder <path> --modname <module_name> --main <main_function_name>"
+    echo "Usage: $0 --folder <path> --modname <module_name> "
     exit 1
 }
 
-MAIN="main"
+
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -20,10 +20,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --folder)
             FOLDER="$2"
-            shift 2
-            ;;
-        --main)
-        MAIN="$2"
             shift 2
             ;;
         *)
@@ -65,7 +61,7 @@ echo "ISpec file:  $ISPEC_FILE"
 echo "Processing files..."
 
 echo "Running control flow check..."
-./control-flow-check.sh --folder "$FOLDER" --modname "$MODNAME" --main "$MAIN"
+./control-flow-check.sh --folder "$FOLDER" --modname "$MODNAME" 
 echo "Control flow check completed successfully."
 echo "############################################"
 echo "############################################"
@@ -75,5 +71,5 @@ echo ""
 
 echo "############################################"
 echo "Running data flow check..."
-./data-flow-check.sh --folder "$FOLDER" --modname "$MODNAME" --main "$MAIN"
+./data-flow-check.sh --folder "$FOLDER" --modname "$MODNAME" 
 echo "Data flow check completed successfully."

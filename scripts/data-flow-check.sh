@@ -5,11 +5,10 @@ set -e
 
 # Function to show usage
 usage() {
-    echo "Usage: $0 --folder <path> --modname <module_name> --main <main_function_name>"
+    echo "Usage: $0 --folder <path> --modname <module_name> "
     exit 1
 }
 
-MAIN="main"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -22,16 +21,13 @@ while [[ $# -gt 0 ]]; do
             FOLDER="$2"
             shift 2
             ;;
-        --main)
-        MAIN="$2"
-            shift 2
-            ;;
         *)
             echo "Unknown option: $1"
             usage
             ;;
     esac
 done
+
 
 # Check that all files are provided
 if [ -z "$MODNAME" ] || [ -z "$FOLDER" ]; then
@@ -56,25 +52,25 @@ done
 echo ""
 echo "###########################################"
 echo "Checking rule DFR1 (only static vars in the module)"
-frama-c -vernfr -nfr-static-vars -main "$MAIN" "$C_FILE" -nfr-ispec "$ISPEC_FILE"
+frama-c -vernfr -nfr-static-vars -keep-unused-functions "all" "$C_FILE" -nfr-ispec "$ISPEC_FILE"
 echo "###########################################"
 
 
 echo ""
 echo "###########################################"
 echo "Checking rule DFR4 (Not rely on default zero-init for global vars)"
-frama-c -vernfr -nfr-proper-init -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
+frama-c -vernfr -nfr-proper-init -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" "$C_FILE" 
 echo "###########################################"
 
 echo ""
 echo "###########################################"
 echo "Checking rule DFR5 (No pointer literals)"
-frama-c -vernfr -nfr-check-ptr-literals -main "$MAIN" "$C_FILE"
+frama-c -vernfr -nfr-check-ptr-literals -keep-unused-functions "all" "$C_FILE"
 echo "###########################################"
 
 echo ""
 echo "###########################################"
 echo "Checking rule DFR6 (Using defined types)"
-frama-c -vernfr -nfr-typedefs -main "$MAIN" "$C_FILE"
+frama-c -vernfr -nfr-typedefs -keep-unused-functions "all" "$C_FILE"
 echo "###########################################"
 

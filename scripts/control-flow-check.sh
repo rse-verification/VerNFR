@@ -5,11 +5,11 @@ set -e
 
 # Function to show usage
 usage() {
-    echo "Usage: $0 --folder <path> --modname <module_name> --main <main_function_name>"
+    echo "Usage: $0 --folder <path> --modname <module_name> "
     exit 1
 }
 
-MAIN="main"
+
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -20,10 +20,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --folder)
             FOLDER="$2"
-            shift 2
-            ;;
-        --main)
-        MAIN="$2"
             shift 2
             ;;
         *)
@@ -55,19 +51,19 @@ done
 echo ""
 echo "###########################################"
 echo "Checking rule CFR1 (only callable functions called)"
-frama-c -vernfr -nfr-check-calls -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
+frama-c -vernfr -nfr-check-calls -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE"  "$C_FILE"
 echo "###########################################"
 
 echo ""
 echo "###########################################"
 echo "Checking rule CFR3 (no function pointers)"
-frama-c -vernfr -nfr-fun-ptrs -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
+frama-c -vernfr -nfr-fun-ptrs -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" "$C_FILE"
 echo "###########################################"
 
 echo ""
 echo "###########################################"
 echo "Checking rule CFR4 (no function defs in h-file)"
-frama-c -vernfr -nfr-no-fun-defs -keep-unused-types -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$H_FILE"
+frama-c -vernfr -nfr-no-fun-defs -keep-unused-functions "all" -keep-unused-types -nfr-ispec "$ISPEC_FILE" "$H_FILE"
 echo "###########################################"
 
 echo ""
@@ -83,18 +79,18 @@ echo "###########################################"
 echo ""
 echo "###########################################"
 echo "Checking rule CFR6 that all entry-points are declared, and CFR11 that the types are correct"
-frama-c -vernfr -nfr-all-entries-declared -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$H_FILE"
+frama-c -vernfr -nfr-all-entries-declared -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE"  "$H_FILE"
 echo "###########################################"
 
 echo ""
 echo "###########################################"
 echo "Checking rule CFR7 that all entry-points are defined"
-frama-c -vernfr -nfr-all-entries-defined -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
+frama-c -vernfr -nfr-all-entries-defined -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" "$C_FILE"
 echo "###########################################"
 
 echo ""
 echo "###########################################"
 echo "Checking rule CFR8 and CFR9, that non-entry-points are declared as non-static, and are declared in the c-file"
-frama-c -vernfr -nfr-only-entries -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
+frama-c -vernfr -nfr-only-entries -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" "$C_FILE"
 echo "###########################################"
 
