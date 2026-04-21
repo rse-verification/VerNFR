@@ -51,41 +51,28 @@ for f in "$C_FILE" "$H_FILE" "$ISPEC_FILE"; do
     fi
 done
 
-# Example: Print the file names
-echo "Code file:   $C_FILE"
-echo "Header file: $H_FILE"
-echo "ISpec file:  $ISPEC_FILE"
-
-# ------------------------------------------------------
-# Add your actual processing logic here
-# For example: compile, analyze, or combine the files
-# ------------------------------------------------------
-
-# Example placeholder
-echo "Processing files..."
-# gcc -o output "$C_FILE"   # Example compile command
 
 echo ""
 echo "###########################################"
-echo "Checking rule R1 (only callable functions called)"
+echo "Checking rule CFR1 (only callable functions called)"
 frama-c -vernfr -nfr-check-calls -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
 echo "###########################################"
 
 echo ""
 echo "###########################################"
-echo "Checking rule R2 (no function pointers)"
+echo "Checking rule CFR3 (no function pointers)"
 frama-c -vernfr -nfr-fun-ptrs -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
 echo "###########################################"
 
 echo ""
 echo "###########################################"
-echo "Checking rule R3 (no function defs in h-file)"
+echo "Checking rule CFR4 (no function defs in h-file)"
 frama-c -vernfr -nfr-no-fun-defs -keep-unused-types -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$H_FILE"
 echo "###########################################"
 
 echo ""
 echo "###########################################"
-echo "Checking rule R4 (only include h-files)"
+echo "Checking rule CFR5 (only include h-files)"
 matches=$(grep -nE '#\s*include\s*["<][^">]+\.c[">]' "$C_FILE" || true)
 
 if [[ -n "$matches" ]]; then
@@ -95,16 +82,19 @@ echo "###########################################"
 
 echo ""
 echo "###########################################"
-echo "Checking rule R5 check that all entry-points are declared and defined"
+echo "Checking rule CFR6 that all entry-points are declared, and CFR11 that the types are correct"
 frama-c -vernfr -nfr-all-entries-declared -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$H_FILE"
+echo "###########################################"
+
+echo ""
+echo "###########################################"
+echo "Checking rule CFR7 that all entry-points are defined"
 frama-c -vernfr -nfr-all-entries-defined -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
 echo "###########################################"
 
 echo ""
 echo "###########################################"
-echo "Checking rule R6 check that only entry-points are declared as non-static"
+echo "Checking rule CFR8 and CFR9, that non-entry-points are declared as non-static, and are declared in the c-file"
 frama-c -vernfr -nfr-only-entries -keep-unused-functions "all" -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
 echo "###########################################"
 
-
-echo "Done!"

@@ -51,30 +51,29 @@ for f in "$C_FILE" "$H_FILE" "$ISPEC_FILE"; do
     fi
 done
 
+# Example: Print the file names
+echo "Code file:   $C_FILE"
+echo "Header file: $H_FILE"
+echo "ISpec file:  $ISPEC_FILE"
 
+# ------------------------------------------------------
+# Add your actual processing logic here
+# For example: compile, analyze, or combine the files
+# ------------------------------------------------------
 
+# Example placeholder
+echo "Processing files..."
+
+echo "Running control flow check..."
+./control-flow-check.sh --folder "$FOLDER" --modname "$MODNAME" --main "$MAIN"
+echo "Control flow check completed successfully."
+echo "############################################"
+echo "############################################"
+echo "############################################"
 echo ""
-echo "###########################################"
-echo "Checking rule DFR1 (only static vars in the module)"
-frama-c -vernfr -nfr-static-vars -main "$MAIN" "$C_FILE" -nfr-ispec "$ISPEC_FILE"
-echo "###########################################"
-
-
 echo ""
-echo "###########################################"
-echo "Checking rule DFR4 (Not rely on default zero-init for global vars)"
-frama-c -vernfr -nfr-proper-init -nfr-ispec "$ISPEC_FILE" -main "$MAIN" "$C_FILE"
-echo "###########################################"
 
-echo ""
-echo "###########################################"
-echo "Checking rule DFR5 (No pointer literals)"
-frama-c -vernfr -nfr-check-ptr-literals -main "$MAIN" "$C_FILE"
-echo "###########################################"
-
-echo ""
-echo "###########################################"
-echo "Checking rule DFR6 (Using defined types)"
-frama-c -vernfr -nfr-typedefs -main "$MAIN" "$C_FILE"
-echo "###########################################"
-
+echo "############################################"
+echo "Running data flow check..."
+./data-flow-check.sh --folder "$FOLDER" --modname "$MODNAME" --main "$MAIN"
+echo "Data flow check completed successfully."
