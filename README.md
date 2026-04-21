@@ -1,5 +1,4 @@
-# vernfr
-Verification of Non-Functional Requirements (NFR)
+Verification of Non-Functional Requirements (VerNFR)
 
 ## Testing
 Regressions testing using frama-c-ptests utility. run `dune build @tests`
