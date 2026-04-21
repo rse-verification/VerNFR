@@ -33,11 +33,13 @@ Each task can also be run directly in Frama-C, see `frama-c -nfr-h` for guidance
 ## Syntax IS-file 
 The is-file the following syntax. See also examples in `tests`
 
-InterfaceContract ::= "module" id entry_points entry_order external_calls external_order  
+```
+InterfaceContract ::= "module" id EntryPoints EntryOrder ExternalCalls ExternalOrder  
                       
-entry_points ::= "entry_functions" FunDecl*  
-entry_order  ::= "entry_order" OrderConstraint*  
-external_calls ::= "external_calls" extmodule*  
-extmodule      ::= id FunDecl*  
-external_order ::= "external_order" OrderConstraint*  
-OrderConstraint ::= LT(id, id) | GT(id, id)  
+EntryPoints ::= "entry_functions" FunDecl*  
+EntryOrder  ::= "entry_order" OrderConstraint*  
+ExternalCalls ::= "external_calls" ExternalModule*  
+ExternalModule      ::= id FunDecl*  
+ExternalOrder ::= "external_order" OrderConstraint*  
+OrderConstraint ::= LT(id, id) | GT(id, id)
+```
