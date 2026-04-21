@@ -59,19 +59,26 @@ class properInitChecker ispec = object (self)
      avoid flooding stdin with eva results *)
     method get_all_inouts () = 
     (*Redirect stdout*)
-      let (entry_kf, lib_entry) = Globals.entry_point () in
+      
+      let prev_entry = 
+        try (Some (Globals.entry_point ()))
+        with Globals.No_such_entry_point _ -> None
+      in
       let all_inouts = 
         Globals.Functions.fold 
           (fun kf acc -> 
             Self.debug ~level:4 "Eva anlysis of %s" (Kernel_function.get_name kf);
-            Globals.set_entry_point (Kernel_function.get_name kf) lib_entry;
+            Globals.set_entry_point (Kernel_function.get_name kf) true;
             Utils.exec_with_redirected_stdout (NfrLogFile.get ()) Eva.Analysis.compute;
             
             Kernel_function.Map.add kf (Inout.get_precise_inout kf) acc
           )
           Kernel_function.Map.empty
       in
-      Globals.set_entry_point (Kernel_function.get_name entry_kf) lib_entry;
+      (match prev_entry with 
+        | None -> Self.debug ~level:5 "no entry function found for proper init check"
+        | Some(entry_kf, lib_entry) ->
+            Globals.set_entry_point (Kernel_function.get_name entry_kf) lib_entry);
       all_inouts
   method !vfile f = 
     let ispec = Option.get self#ispec in
@@ -107,11 +114,14 @@ class properInitChecker ispec = object (self)
         in
         (*Get current entry points inputs*)
         
+
+
         let entry_ins = (Kernel_function.Map.find entry_kf all_inouts).over_inputs in
         Self.debug ~level:4 "e_ins: %a" Locations.Zone.pretty entry_ins;
         (* we start with the global vars without explicit init, then we remove all 
           outputs for predecessor functions, and then take the intersection with the current entry
         *)
+
         let inputs_no_init = Locations.Zone.meet 
           entry_ins
           (Locations.Zone.diff no_init_vars pred_outs)
