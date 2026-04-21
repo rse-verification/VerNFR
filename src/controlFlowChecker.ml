@@ -4,21 +4,48 @@ open GenericNFRChecker
 (* open Parser_lib.Ispec *)
 open Utils
 
-(* 
-class callGraphBuilder ispec = object (self) 
-inherit genericNFRChecker ispec
-  let all_functions () =
-  Globals.Functions.fold (fun kf acc -> kf :: acc) []
-end
 
+(* class getCallsInFuns ispec = object (self)
+  inherit Visitor.frama_c_inplace
+  
+  val mutable callsPerFunc = Map.empty
+  method getCallsPerFunc = callsPerFunc 
+  
+  method compute () = 
+    List.iter 
+      (fun ep -> match s.skind with 
+        | Instr (Call (_, lh, _, _)) -> 
+          (match lh with
+            | Var(vi) -> 
+              callsPerFunc <- Map.add f.svar vi callsPerFunc
+            | Mem(_) ->
+              Self.debug ~level:3 "mem lval in call exp: %a" Printer.pp_lhost lh)
+        | _ -> Cil.SkipChildren
+      )
+      f.sbody.bstmts 
+end *)
 
-class externalCallsChecker ispec = object (self) 
+(* class externalCallsChecker ispec = object (self) 
 inherit genericNFRChecker ispec
   method name = "ExternalCallsChecker"
-  method !vstmt () = 
+  (* method !vfile _ = 
     (* match on Call**)
     (* Check it is entry-point*)
     (* Run iter_in_order *)
+    let (entry_kf, lib_entry) = Globals.entry_point () in
+    List.iter  
+      (fun vi -> 
+        Self.debug ~level:4 "Cg anlysis of %s" (vi.vname);
+        Globals.set_entry_point (vi.vname) lib_entry;
+        (* Utils.exec_with_redirected_stdout (NfrLogFile.get ())  *)
+        (Callgraph.Cg.compute ());
+         
+      )
+      (self#get_entry_vis ());
+    Globals.set_entry_point (Kernel_function.get_name entry_kf) lib_entry;
+    Cil.SkipChildren *)
+  method !vstmt_aux s = 
+     
 end *)
 
 class onlyEntryPointsDeclaredChecker ispec = object (self)
@@ -167,7 +194,8 @@ class allEntryPointsDeclaredChecker ispec = object (self)
   method !vfile f =
     let prog_decls = List.filter_map
       (fun g -> match g with
-        | GFunDecl(_, vi, _) when vi.vstorage = NoStorage -> Some(vi)
+        | GFunDecl(_, vi, _) when 
+           (vi.vstorage = NoStorage || vi.vstorage = Extern) -> Some(vi)
         | _ -> None
       ) f.globals
     in
