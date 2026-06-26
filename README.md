@@ -1,4 +1,5 @@
-Verification of Non-Functional Requirements (VerNFR)
+Verification of Non-Functional Requirements (VerNFR).
+Compatible with Frama-C version 32.0
 
 ## Testing
 Regressions testing using frama-c-ptests utility. run `dune build @tests`
