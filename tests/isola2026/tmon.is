@@ -1,0 +1,12 @@
+module tmon {
+  entry_functions: { void tmon_init(void), int tmon_step(void) }
+  entry_order: { tmon_init < tmon_step }
+  external_calls: {
+    sensors.h: { void tmon_sens_create(void), int tmon_sens_read(void) },
+    warnings.h: { void tmon_warn_create(void), void tmon_warn_write(int) },
+    utils.h: { int update_sat(int, int, int, int) }
+  }
+  external_call_order: { 
+    tmon_sens_create < tmon_sens_read, tmon_warn_create < tmon_warn_write
+  }
+}
