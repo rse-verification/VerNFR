@@ -1,7 +1,9 @@
 [kernel] Parsing callable_f.c (with preprocessing)
 [nfr] Parsed ispec successfully!
 [nfr] Running whiteListFunCallsChecker
-[nfr] Warning: Function call to snd_foo, which is not in the whitelist (at callable_f.c:18)
-[nfr] Warning: Function call to snd_bar, which is not in the whitelist (at callable_f.c:19)
-[nfr] Warning: Function call to snd_bar, which is not in the whitelist (at callable_f.c:20)
-[nfr] Warning: Function call to snd_bar, which is not in the whitelist (at callable_f.c:21)
+[nfr] Warning: Function call to snd_foo, which is not in the list of included functions for external header file extern_defs.h (at callable_f.c:19)
+[nfr] Warning: Function call to snd_bar, which is not in the list of included functions for external header file extern_defs.h (at callable_f.c:20)
+[nfr] Warning: Function call to snd_bar, which is not in the list of included functions for external header file extern_defs.h (at callable_f.c:21)
+[nfr] Warning: Function call to util_function2 that is included from utils.h, which is not a specified external header file. (at callable_f.c:21)
+[nfr] Warning: Function call to util_function1 that is included from utils.h, which is not a specified external header file. (at callable_f.c:22)
+[nfr] Warning: Function call to snd_bar, which is not in the list of included functions for external header file extern_defs.h (at callable_f.c:23)

@@ -4,7 +4,7 @@ module m1 {
   }
   entry_order: { }
   external_calls: {
-    extern_defs: {
+    extern_defs.h: {
       void foo(void), void bar(void)
     }
   }

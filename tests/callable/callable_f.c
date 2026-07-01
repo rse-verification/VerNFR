@@ -1,8 +1,9 @@
 /* run.config
-   DEPS: extern_defs.h callable_spec.is
+   DEPS: extern_defs.h utils.h callable_spec.is
    STDOPT: +"-nfr-ispec" +"callable_spec.is"
 */
 #include "extern_defs.h"
+#include "utils.h"
 
 static void internal_func(void);
 static void internal_int_func(int x);
@@ -17,6 +18,7 @@ void f_10ms() {
     //Illegal stuff
     snd_foo();
     g = 3 + snd_bar();
-    int v = snd_bar();
+    int v = snd_bar() + util_function2();
+    util_function1(v);
     internal_int_func(snd_bar());
 }
