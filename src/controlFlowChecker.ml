@@ -89,13 +89,21 @@ class whiteListFunCallsChecker ispec = object (self)
 
   method private check_vi ?(loc = unknown_loc) vi =
     Self.debug ~level:6 "%a" Format.pp_print_bool  (vi_is_static vi) ;
-
-    if not(vi_is_static vi) && not(viInList vi (self#get_callable_vis ()))  then
-      self#print_error ~loc:loc (Format.asprintf "Function call to %a, which is not in the whitelist"
-        Printer.pp_varinfo vi)
-    else
-      Self.debug ~level:3 "Function call to %a (which is in the whitelist)"
-        Printer.pp_varinfo vi
+    
+    match vi_is_static vi with
+      | true -> Self.debug ~level:5 "Function call to %a (which is a static function)" Printer.pp_varinfo vi
+      | false -> 
+        match StringMap.find_opt (loc_to_fname vi.vdecl) (self#get_callable_vis ()) with
+          | None -> 
+            self#print_error ~loc:loc (Format.asprintf "Function call to %a that is included from %s, which is not a specified external header file."
+            Printer.pp_varinfo vi (loc_to_fname vi.vdecl))
+          | Some(vi_list) -> 
+            if (not(viInList vi (vi_list))) then
+              self#print_error ~loc:loc (Format.asprintf "Function call to %a, which is not in the list of included functions for external header file %s"
+                Printer.pp_varinfo vi (loc_to_fname vi.vdecl))
+            else 
+               Self.debug ~level:3 "Function call to %a, which is included in the permiitted calls for %s"
+                Printer.pp_varinfo vi (loc_to_fname vi.vdecl)
 
   method !vinst i =
     match i with
