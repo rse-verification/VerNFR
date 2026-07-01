@@ -2,7 +2,10 @@ open Options
 open Utils
 open Parser_lib.Ispec
 
+module StringMap = Map.Make(String)
+
 class virtual genericNFRChecker ispec = object (self)
+
   inherit Visitor.frama_c_inplace
   method virtual name : string
   method ispec: Parser_lib.Ispec.ispec option = ispec
@@ -47,10 +50,10 @@ class virtual genericNFRChecker ispec = object (self)
   method make_callable_vis () = 
     callable_vis <- 
       Some(
-        List.concat_map 
-          (fun restr_inc -> List.map 
-            self#vi_from_ispec_decl 
-            restr_inc.fns)
+        List.fold_left 
+          (fun acc restr_inc ->
+            StringMap.add restr_inc.hfile (List.map self#vi_from_ispec_decl restr_inc.fns) acc)
+          StringMap.empty
           (self#get_ispec ()).extern_calls.includes
       )
 
