@@ -1,3 +1,6 @@
+/* run.config
+   OPT: -wp -wp-rte
+*/
 #include "limits.h"
 /*@ requires INT_MIN < min < max && min <= timer <= max < INT_MAX;
     assigns \nothing;

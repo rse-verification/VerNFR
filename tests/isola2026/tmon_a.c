@@ -1,3 +1,11 @@
+/* run.config
+   DEPS: utils.h sensors.h warnings.h tmon.is
+   STDOPT: +"-nfr-ispec" +"tmon.is" +"-nfr-check-calls" +"-nfr-fun-ptrs" +"-nfr-no-fun-defs" +"-nfr-all-entries-defined" +"-nfr-only-entries" +"-nfr-static-vars" +"-nfr-proper-init" +"-nfr-check-ptr-literals" +"-nfr-typedefs"
+*/
+
+//Dont check "all entries declared" or "no function defs in h-file", since they are in the h-file"
+//not sure how to make this compatible with frama-c-ptests
+
 #include "sensors.h"
 #include "warnings.h"
 #include "utils.h"

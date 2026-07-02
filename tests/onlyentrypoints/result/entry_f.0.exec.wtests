@@ -1,7 +1,7 @@
 {
   "dir": "tests/onlyentrypoints/result",
   "info": "TEST #0 OF TEST FILE tests/onlyentrypoints/entry_f.c",
-  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr    entry_f.c  -vernfr -nfr-only-entries -keep-unused-functions=all -main f_init -nfr-ispec entry_f_spec.is > \"entry_f.res.log\" 2> \"entry_f.err.log\"",
+  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    entry_f.c  -vernfr -nfr-only-entries -keep-unused-functions=all -main f_init -nfr-ispec entry_f_spec.is > \"entry_f.res.log\" 2> \"entry_f.err.log\"",
   "out": "entry_f.res.log",
   "err": "entry_f.err.log",
   "oracle_out": "../oracle/entry_f.res.oracle",

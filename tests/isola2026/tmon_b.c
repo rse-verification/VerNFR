@@ -1,3 +1,7 @@
+/* run.config
+   DEPS: utils.h sensors.h warnings.h tmon.is
+   STDOPT: +"-nfr-ispec" +"tmon.is" +"-nfr-check-calls" +"-nfr-fun-ptrs" +"-nfr-no-fun-defs" +"-nfr-all-entries-defined" +"-nfr-only-entries" +"-nfr-static-vars" +"-nfr-proper-init" +"-nfr-check-ptr-literals" +"-nfr-typedefs"
+*/
 #include "sensors.h"
 #include "warnings.h"
 #include "utils.h"
@@ -16,7 +20,7 @@ static void tmon_step(void){
     tmon_warn_write(1);
   } else if (timer == 0) { 
     // deactivate warning
-    xmon_warn_write(0);
+    tmon_warn_write(0);
   }
 }
 

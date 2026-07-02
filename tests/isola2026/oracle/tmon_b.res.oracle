@@ -1,0 +1,20 @@
+[kernel] Parsing tmon_b.c (with preprocessing)
+[nfr] Parsed ispec successfully!
+[nfr] Running StaticVariableChecker
+[nfr] Warning: Variable timer does not have static storage (at tmon_b.c:9)
+[nfr] Running onlyEntryPointsDeclaredChecker
+[nfr] Warning: The function get_tmon_timer is defined as non-static but not in the list of entry functions (at tmon_b.c:27)
+[nfr] Running whiteListFunCallsChecker
+[nfr] Running NoFunctionPointersChecker
+[nfr] Running NoFunctionDefinitionsChecker
+[nfr] Warning: Found function definition: tmon_init (at tmon_b.c:11)
+[nfr] Warning: Found function definition: tmon_step (at tmon_b.c:15)
+[nfr] Warning: Found function definition: get_tmon_timer (at tmon_b.c:27)
+[nfr] Running properInitChecker
+[nfr] getting inouts next
+[nfr] All variables used have been initialised properly in tmon_init
+[nfr] Warning: The following variables uses their default value in tmon_step: timer
+[nfr] Running AllEntryPointsDefinedChecker
+[nfr] Warning: The specified entry point tmon_step is not defined
+[nfr] Running PointerLitealsChecker
+[nfr] Running TypeDefChecker
