@@ -1,0 +1,9 @@
+{
+  "dir": "tests/isola2026/result",
+  "info": "TEST #0 OF TEST FILE tests/isola2026/utils.c",
+  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.res.log\" 2> \"utils.err.log\"",
+  "out": "utils.res.log",
+  "err": "utils.err.log",
+  "oracle_out": "../oracle/utils.res.oracle",
+  "oracle_err": "../oracle/utils.err.oracle"
+}

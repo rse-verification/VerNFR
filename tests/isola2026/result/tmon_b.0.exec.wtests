@@ -1,0 +1,9 @@
+{
+  "dir": "tests/isola2026/result",
+  "info": "TEST #0 OF TEST FILE tests/isola2026/tmon_b.c",
+  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    tmon_b.c  -vernfr -keep-unused-functions \"all\" -keep-unused-types -nfr-ispec tmon.is -nfr-check-calls -nfr-fun-ptrs -nfr-no-fun-defs -nfr-all-entries-defined -nfr-only-entries -nfr-static-vars -nfr-proper-init -nfr-check-ptr-literals -nfr-typedefs > \"tmon_b.res.log\" 2> \"tmon_b.err.log\"",
+  "out": "tmon_b.res.log",
+  "err": "tmon_b.err.log",
+  "oracle_out": "../oracle/tmon_b.res.oracle",
+  "oracle_err": "../oracle/tmon_b.err.oracle"
+}

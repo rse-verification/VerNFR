@@ -1,7 +1,7 @@
 {
   "dir": "tests/typedefs/result",
   "info": "TEST #0 OF TEST FILE tests/typedefs/typedefs_f.c",
-  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr    typedefs_f.c -vernfr -nfr-typedefs > \"typedefs_f.res.log\" 2> \"typedefs_f.err.log\"",
+  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    typedefs_f.c -vernfr -nfr-typedefs > \"typedefs_f.res.log\" 2> \"typedefs_f.err.log\"",
   "out": "typedefs_f.res.log",
   "err": "typedefs_f.err.log",
   "oracle_out": "../oracle/typedefs_f.res.oracle",

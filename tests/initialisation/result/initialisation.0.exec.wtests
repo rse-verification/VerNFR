@@ -1,7 +1,7 @@
 {
   "dir": "tests/initialisation/result",
   "info": "TEST #0 OF TEST FILE tests/initialisation/initialisation.c",
-  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr    initialisation.c  -vernfr -nfr-proper-init -main f_10ms -nfr-ispec initialisation.is > \"initialisation.res.log\" 2> \"initialisation.err.log\"",
+  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    initialisation.c  -vernfr -nfr-proper-init -main f_10ms -nfr-ispec initialisation.is > \"initialisation.res.log\" 2> \"initialisation.err.log\"",
   "out": "initialisation.res.log",
   "err": "initialisation.err.log",
   "oracle_out": "../oracle/initialisation.res.oracle",

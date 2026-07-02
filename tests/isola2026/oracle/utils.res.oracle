@@ -1,0 +1,9 @@
+[kernel] Parsing utils.c (with preprocessing)
+[wp] Running WP plugin...
+[rte:annot] annotating function update_sat
+[wp] 7 goals scheduled
+[wp] Proved goals:    9 / 9
+  Terminating:       1
+  Unreachable:       1
+  Qed:               4 (2ms-9ms-58ms)
+  Alt-Ergo 2.6.2:    3 (18ms-29ms)

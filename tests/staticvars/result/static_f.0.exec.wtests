@@ -1,7 +1,7 @@
 {
   "dir": "tests/staticvars/result",
   "info": "TEST #0 OF TEST FILE tests/staticvars/static_f.c",
-  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr    static_f.c -vernfr -nfr-static-vars > \"static_f.res.log\" 2> \"static_f.err.log\"",
+  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    static_f.c -vernfr -nfr-static-vars > \"static_f.res.log\" 2> \"static_f.err.log\"",
   "out": "static_f.res.log",
   "err": "static_f.err.log",
   "oracle_out": "../oracle/static_f.res.oracle",
