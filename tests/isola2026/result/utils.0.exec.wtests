@@ -1,9 +1,13 @@
 {
   "dir": "tests/isola2026/result",
   "info": "TEST #0 OF TEST FILE tests/isola2026/utils.c",
-  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.res.log\" 2> \"utils.err.log\"",
+  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.res.unfiltered-log\" 2> \"utils.err.unfiltered-log\"",
   "out": "utils.res.log",
   "err": "utils.err.log",
+  "tmpout": "utils.res.unfiltered-log",
+  "tmperr": "utils.err.unfiltered-log",
+  "sedout": "cat utils.res.unfiltered-log | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' > \"utils.res.log\"",
+  "sederr": "cat utils.err.unfiltered-log | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' > \"utils.err.log\"",
   "oracle_out": "../oracle/utils.res.oracle",
   "oracle_err": "../oracle/utils.err.oracle"
 }

@@ -1,4 +1,5 @@
 /* run.config
+   FILTER: sed -E 's/\([0-9]+ms(-[0-9]+ms)*\)//g'
    OPT: -wp -wp-rte
 */
 #include "limits.h"

@@ -92,10 +92,20 @@
   (deps (alias "utils.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
 (rule ; TEST #0 OF TEST FILE tests/isola2026/utils.c
   (alias "utils.0.exec.wtests")
-  (targets "utils.err.log" "utils.res.log"  )
+  (targets "utils.err.unfiltered-log" "utils.res.unfiltered-log"  )
   (deps "utils.0.exec.wtests" "../oracle/utils.res.oracle" "../oracle/utils.err.oracle"  "utils.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "utils.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.res.log\" 2> \"utils.err.log\"" ))
+(action (run frama-c-wtests -brief "utils.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.res.unfiltered-log\" 2> \"utils.err.unfiltered-log\""  "cat utils.res.unfiltered-log | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' > \"utils.res.log\"" "cat utils.err.unfiltered-log | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' > \"utils.err.log\""))
+)
+(rule ; FILTER RES #0 OF TEST FILE "utils.c"
+  (deps "utils.res.unfiltered-log")
+         (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (with-stdout-to "utils.res.log" (with-accepted-exit-codes (or 0 1 2 125) (system "cat utils.res.unfiltered-log | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g'"))))
+)
+(rule ; FILTER ERR #0 OF TEST FILE "utils.c"
+  (deps "utils.err.unfiltered-log")
+         (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (with-stdout-to "utils.err.log" (with-accepted-exit-codes (or 0 1 2 125) (system "cat utils.err.unfiltered-log | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g'"))))
 )
 (rule ; REPRODUCE TEST #0 OF TEST FILE "utils.c"
   (alias "utils.0.exec")
@@ -107,7 +117,7 @@
   (alias "utils.0.exec.show")
   (deps  "utils.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.res.log\" 2> \"utils.err.log\"'"))
+(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.res.unfiltered-log\" 2> \"utils.err.unfiltered-log\"'"))
 )
 (rule
   (alias "utils.0.exec.diff")
