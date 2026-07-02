@@ -2,5 +2,7 @@
 [nfr] Parsed ispec successfully!
 [nfr] Running AllEntryPointsDeclaredChecker
 [nfr] Warning: The specified entry point f_20ms is not declared
+[nfr] Warning: The specified entry point f_10ms is not declared
 [nfr] Running AllEntryPointsDefinedChecker
+[nfr] Warning: The specified entry point f_20ms is not defined
 [nfr] Warning: The specified entry point f_10ms is not defined

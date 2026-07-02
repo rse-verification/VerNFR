@@ -1,0 +1,9 @@
+{
+  "dir": "tests/typedefs/result",
+  "info": "TEST #0 OF TEST FILE tests/typedefs/typedefs.c",
+  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr    typedefs.c -vernfr -nfr-typedefs > \"typedefs.res.log\" 2> \"typedefs.err.log\"",
+  "out": "typedefs.res.log",
+  "err": "typedefs.err.log",
+  "oracle_out": "../oracle/typedefs.res.oracle",
+  "oracle_err": "../oracle/typedefs.err.oracle"
+}

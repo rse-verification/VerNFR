@@ -1,1 +1,1 @@
-DEFAULT_SUITES=callable onlyentrypoints funptrs staticvars initialisation allentrypoints ptrliteral
+DEFAULT_SUITES=callable onlyentrypoints funptrs staticvars initialisation allentrypoints ptrliteral typedefs
