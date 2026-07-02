@@ -1,0 +1,7 @@
+[kernel] Parsing typedefs_f.c (with preprocessing)
+[kernel:parser:decimal-float] typedefs_f.c:21: Warning: 
+  Floating-point constant 32.2 is not represented exactly. Will use 0x1.019999999999ap5.
+  (warn-once: no further messages from category 'parser:decimal-float' will be emitted)
+[nfr] Running TypeDefChecker
+[nfr] Warning: The variable f uses type float instead of the defined typedef my_float (at typedefs_f.c:9)
+[nfr] Warning: In function main, the variable y uses type float instead of the defined typedef my_float
