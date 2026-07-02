@@ -20,7 +20,7 @@ static void tmon_step(void){
     tmon_warn_write(1);
   } else if (timer == 0) { 
     // deactivate warning
-    tmon_warn_write(0);
+    xmon_warn_write(0);
   }
 }
 
