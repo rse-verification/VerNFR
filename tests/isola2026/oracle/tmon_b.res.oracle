@@ -5,6 +5,7 @@
 [nfr] Running onlyEntryPointsDeclaredChecker
 [nfr] Warning: The function get_tmon_timer is defined as non-static but not in the list of entry functions (at tmon_b.c:27)
 [nfr] Running whiteListFunCallsChecker
+[nfr] Warning: Function call to xmon_warn_write, which is not in the list of included functions for external header file warnings.h (at tmon_b.c:23)
 [nfr] Running NoFunctionPointersChecker
 [nfr] Running NoFunctionDefinitionsChecker
 [nfr] Warning: Found function definition: tmon_init (at tmon_b.c:11)
