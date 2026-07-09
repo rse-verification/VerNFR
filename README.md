@@ -28,8 +28,14 @@ are available, use `dune build` and `dune install` in the root.
 
 ## Testing
 
-Regressions testing uses the `frama-c-ptests` utility.
-Use `dune test` to run all regression tests.
+Regressions testing uses the `frama-c-ptests` utility, which runs
+verification using provers like Alt-Ergo that must be enabled:
+
+```shell
+why3 config detect
+```
+
+When provers are available, use `dune test` to run all regression tests.
 
 ## Verification tasks and options
 
