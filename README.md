@@ -58,9 +58,9 @@ frama-c -vernfr -nfr-check-calls -nfr-ispec test.is test.c
 
 See `frama-c -nfr-h` for more information on how to use VerNFR with Frama-C. 
 
-For convenience, we provide the script `./scripts/all-checks.sh` as an entry for VerNFR
-that performs all verification tgasks. The script takes as input a module consisting of
-a `.c` file and an `.h` file, and an interface contract `.is` file.
+For convenience, we provide the script `./scripts/all-checks.sh` as an entry point for
+VerNFR that performs all verification tasks. The script takes as input a module
+consisting of a `.c` file and an `.h` file, and an interface contract `.is` file.
 
 The script can be run as follows:
 
