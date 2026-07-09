@@ -99,7 +99,7 @@ class properInitChecker ispec = object (self)
         | None -> Self.debug ~level:3 "no entry function find for %a" Printer.pp_varinfo entry_vi
         | Some(entry_kf) -> 
         let pred_vis = 
-          List.map self#vi_from_ispec_decl (Utils.ISDSet.to_list (Utils.get_fns_called_before isd ispec))
+          List.map self#vi_from_ispec_decl (Utils.ISDSet.elements (Utils.get_fns_called_before isd ispec))
         in
         List.iter (fun x -> Self.debug ~level:5 "predvis: %a" Printer.pp_varinfo x) pred_vis;  
 
