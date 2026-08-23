@@ -126,8 +126,8 @@ let get_fns_called_before isd ispec =
   res
 
 
-let loc_to_fname (loc: Filepath.position * Filepath.position) = 
-  Filepath.basename (fst loc).pos_path
+let loc_to_fname (loc: Filepos.t * Filepos.t) = 
+  Filepath.basename (Filepos.path (fst loc))
 
 
 let exec_with_redirected_stdout log_file f =
