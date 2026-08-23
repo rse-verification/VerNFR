@@ -8,10 +8,10 @@
   (deps (alias "callable_f.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
 (rule ; TEST #0 OF TEST FILE tests/callable/callable_f.c
   (alias "callable_f.0.exec.wtests")
-  (targets "callable_f.err.log" "callable_f.res.log"  )
-  (deps "callable_f.0.exec.wtests" "../oracle/callable_f.res.oracle" "../oracle/callable_f.err.oracle"  "callable_f.c"  "extern_defs.h" "utils.h" "callable_spec.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (targets "callable_f.0.err.log" "callable_f.0.res.log"  )
+  (deps "callable_f.0.exec.wtests" "../oracle/callable_f.0.res.oracle" "../oracle/callable_f.0.err.oracle"  "callable_f.c"  "extern_defs.h" "utils.h" "callable_spec.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "callable_f.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    callable_f.c  -vernfr -nfr-check-calls -main f_10ms -nfr-ispec callable_spec.is > \"callable_f.res.log\" 2> \"callable_f.err.log\"" ))
+(action (run frama-c-wtests -brief "callable_f.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    callable_f.c  -vernfr -nfr-check-calls -main f_10ms -nfr-ispec callable_spec.is > \"callable_f.0.res.log\" 2> \"callable_f.0.err.log\"" ))
 )
 (rule ; REPRODUCE TEST #0 OF TEST FILE "callable_f.c"
   (alias "callable_f.0.exec")
@@ -23,17 +23,17 @@
   (alias "callable_f.0.exec.show")
   (deps  "callable_f.c"  "extern_defs.h" "utils.h" "callable_spec.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    callable_f.c  -vernfr -nfr-check-calls -main f_10ms -nfr-ispec callable_spec.is > \"callable_f.res.log\" 2> \"callable_f.err.log\"'"))
+(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    callable_f.c  -vernfr -nfr-check-calls -main f_10ms -nfr-ispec callable_spec.is > \"callable_f.0.res.log\" 2> \"callable_f.0.err.log\"'"))
 )
 (rule
   (alias "callable_f.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/callable_f.res.oracle" "callable_f.res.log"))
+(action (diff "../oracle/callable_f.0.res.oracle" "callable_f.0.res.log"))
 )
 (rule
   (alias "callable_f.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/callable_f.err.oracle" "callable_f.err.log"))
+(action (diff "../oracle/callable_f.0.err.oracle" "callable_f.0.err.log"))
 )
 (alias (name "callable_f.diff")
   (deps (alias "callable_f.0.exec.diff"))
@@ -50,10 +50,10 @@
   (deps (alias "callable.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
 (rule ; TEST #0 OF TEST FILE tests/callable/callable.c
   (alias "callable.0.exec.wtests")
-  (targets "callable.err.log" "callable.res.log"  )
-  (deps "callable.0.exec.wtests" "../oracle/callable.res.oracle" "../oracle/callable.err.oracle"  "callable.c"  "extern_defs.h" "callable_spec.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (targets "callable.0.err.log" "callable.0.res.log"  )
+  (deps "callable.0.exec.wtests" "../oracle/callable.0.res.oracle" "../oracle/callable.0.err.oracle"  "callable.c"  "extern_defs.h" "callable_spec.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "callable.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    callable.c  -vernfr -nfr-check-calls -main f_10ms -nfr-ispec callable_spec.is > \"callable.res.log\" 2> \"callable.err.log\"" ))
+(action (run frama-c-wtests -brief "callable.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    callable.c  -vernfr -nfr-check-calls -main f_10ms -nfr-ispec callable_spec.is > \"callable.0.res.log\" 2> \"callable.0.err.log\"" ))
 )
 (rule ; REPRODUCE TEST #0 OF TEST FILE "callable.c"
   (alias "callable.0.exec")
@@ -65,17 +65,17 @@
   (alias "callable.0.exec.show")
   (deps  "callable.c"  "extern_defs.h" "callable_spec.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    callable.c  -vernfr -nfr-check-calls -main f_10ms -nfr-ispec callable_spec.is > \"callable.res.log\" 2> \"callable.err.log\"'"))
+(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    callable.c  -vernfr -nfr-check-calls -main f_10ms -nfr-ispec callable_spec.is > \"callable.0.res.log\" 2> \"callable.0.err.log\"'"))
 )
 (rule
   (alias "callable.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/callable.res.oracle" "callable.res.log"))
+(action (diff "../oracle/callable.0.res.oracle" "callable.0.res.log"))
 )
 (rule
   (alias "callable.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/callable.err.oracle" "callable.err.log"))
+(action (diff "../oracle/callable.0.err.oracle" "callable.0.err.log"))
 )
 (alias (name "callable.diff")
   (deps (alias "callable.0.exec.diff"))

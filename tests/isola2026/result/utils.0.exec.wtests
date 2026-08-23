@@ -1,13 +1,13 @@
 {
   "dir": "tests/isola2026/result",
   "info": "TEST #0 OF TEST FILE tests/isola2026/utils.c",
-  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.res.unfiltered-log\" 2> \"utils.err.unfiltered-log\"",
-  "out": "utils.res.log",
-  "err": "utils.err.log",
-  "tmpout": "utils.res.unfiltered-log",
-  "tmperr": "utils.err.unfiltered-log",
-  "sedout": "cat utils.res.unfiltered-log | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' > \"utils.res.log\"",
-  "sederr": "cat utils.err.unfiltered-log | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' > \"utils.err.log\"",
-  "oracle_out": "../oracle/utils.res.oracle",
-  "oracle_err": "../oracle/utils.err.oracle"
+  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.0.res.unfiltered-log\" 2> \"utils.0.err.unfiltered-log\"",
+  "out": "utils.0.res.log",
+  "err": "utils.0.err.log",
+  "tmpout": "utils.0.res.unfiltered-log",
+  "tmperr": "utils.0.err.unfiltered-log",
+  "sedout": "cat utils.0.res.unfiltered-log | sed -E 's/Alt-Ergo [0-9]+\\.[0-9]+\\.[0-9]+/Alt-Ergo/g' | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' > \"utils.0.res.log\"",
+  "sederr": "cat utils.0.err.unfiltered-log | sed -E 's/Alt-Ergo [0-9]+\\.[0-9]+\\.[0-9]+/Alt-Ergo/g' | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' > \"utils.0.err.log\"",
+  "oracle_out": "../oracle/utils.0.res.oracle",
+  "oracle_err": "../oracle/utils.0.err.oracle"
 }

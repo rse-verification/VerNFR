@@ -1,9 +1,9 @@
 {
   "dir": "tests/funptrs/result",
   "info": "TEST #0 OF TEST FILE tests/funptrs/funptr.c",
-  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    funptr.c -vernfr -nfr-fun-ptrs > \"funptr.res.log\" 2> \"funptr.err.log\"",
-  "out": "funptr.res.log",
-  "err": "funptr.err.log",
-  "oracle_out": "../oracle/funptr.res.oracle",
-  "oracle_err": "../oracle/funptr.err.oracle"
+  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    funptr.c -vernfr -nfr-fun-ptrs > \"funptr.0.res.log\" 2> \"funptr.0.err.log\"",
+  "out": "funptr.0.res.log",
+  "err": "funptr.0.err.log",
+  "oracle_out": "../oracle/funptr.0.res.oracle",
+  "oracle_err": "../oracle/funptr.0.err.oracle"
 }

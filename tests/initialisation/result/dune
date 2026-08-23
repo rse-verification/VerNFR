@@ -8,10 +8,10 @@
   (deps (alias "initialisation.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
 (rule ; TEST #0 OF TEST FILE tests/initialisation/initialisation.c
   (alias "initialisation.0.exec.wtests")
-  (targets "initialisation.err.log" "initialisation.res.log"  )
-  (deps "initialisation.0.exec.wtests" "../oracle/initialisation.res.oracle" "../oracle/initialisation.err.oracle"  "initialisation.c"  "initialisation.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (targets "initialisation.0.err.log" "initialisation.0.res.log"  )
+  (deps "initialisation.0.exec.wtests" "../oracle/initialisation.0.res.oracle" "../oracle/initialisation.0.err.oracle"  "initialisation.c"  "initialisation.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "initialisation.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    initialisation.c  -vernfr -nfr-proper-init -main f_10ms -nfr-ispec initialisation.is > \"initialisation.res.log\" 2> \"initialisation.err.log\"" ))
+(action (run frama-c-wtests -brief "initialisation.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    initialisation.c  -vernfr -nfr-proper-init -main f_10ms -nfr-ispec initialisation.is > \"initialisation.0.res.log\" 2> \"initialisation.0.err.log\"" ))
 )
 (rule ; REPRODUCE TEST #0 OF TEST FILE "initialisation.c"
   (alias "initialisation.0.exec")
@@ -23,17 +23,17 @@
   (alias "initialisation.0.exec.show")
   (deps  "initialisation.c"  "initialisation.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    initialisation.c  -vernfr -nfr-proper-init -main f_10ms -nfr-ispec initialisation.is > \"initialisation.res.log\" 2> \"initialisation.err.log\"'"))
+(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    initialisation.c  -vernfr -nfr-proper-init -main f_10ms -nfr-ispec initialisation.is > \"initialisation.0.res.log\" 2> \"initialisation.0.err.log\"'"))
 )
 (rule
   (alias "initialisation.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/initialisation.res.oracle" "initialisation.res.log"))
+(action (diff "../oracle/initialisation.0.res.oracle" "initialisation.0.res.log"))
 )
 (rule
   (alias "initialisation.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/initialisation.err.oracle" "initialisation.err.log"))
+(action (diff "../oracle/initialisation.0.err.oracle" "initialisation.0.err.log"))
 )
 (alias (name "initialisation.diff")
   (deps (alias "initialisation.0.exec.diff"))
@@ -50,10 +50,10 @@
   (deps (alias "initialisation_f.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
 (rule ; TEST #0 OF TEST FILE tests/initialisation/initialisation_f.c
   (alias "initialisation_f.0.exec.wtests")
-  (targets "initialisation_f.err.log" "initialisation_f.res.log"  )
-  (deps "initialisation_f.0.exec.wtests" "../oracle/initialisation_f.res.oracle" "../oracle/initialisation_f.err.oracle"  "initialisation_f.c"  "initialisation.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (targets "initialisation_f.0.err.log" "initialisation_f.0.res.log"  )
+  (deps "initialisation_f.0.exec.wtests" "../oracle/initialisation_f.0.res.oracle" "../oracle/initialisation_f.0.err.oracle"  "initialisation_f.c"  "initialisation.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "initialisation_f.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    initialisation_f.c  -vernfr -nfr-proper-init -main f_10ms -nfr-ispec initialisation.is > \"initialisation_f.res.log\" 2> \"initialisation_f.err.log\"" ))
+(action (run frama-c-wtests -brief "initialisation_f.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    initialisation_f.c  -vernfr -nfr-proper-init -main f_10ms -nfr-ispec initialisation.is > \"initialisation_f.0.res.log\" 2> \"initialisation_f.0.err.log\"" ))
 )
 (rule ; REPRODUCE TEST #0 OF TEST FILE "initialisation_f.c"
   (alias "initialisation_f.0.exec")
@@ -65,17 +65,17 @@
   (alias "initialisation_f.0.exec.show")
   (deps  "initialisation_f.c"  "initialisation.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    initialisation_f.c  -vernfr -nfr-proper-init -main f_10ms -nfr-ispec initialisation.is > \"initialisation_f.res.log\" 2> \"initialisation_f.err.log\"'"))
+(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    initialisation_f.c  -vernfr -nfr-proper-init -main f_10ms -nfr-ispec initialisation.is > \"initialisation_f.0.res.log\" 2> \"initialisation_f.0.err.log\"'"))
 )
 (rule
   (alias "initialisation_f.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/initialisation_f.res.oracle" "initialisation_f.res.log"))
+(action (diff "../oracle/initialisation_f.0.res.oracle" "initialisation_f.0.res.log"))
 )
 (rule
   (alias "initialisation_f.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/initialisation_f.err.oracle" "initialisation_f.err.log"))
+(action (diff "../oracle/initialisation_f.0.err.oracle" "initialisation_f.0.err.log"))
 )
 (alias (name "initialisation_f.diff")
   (deps (alias "initialisation_f.0.exec.diff"))
