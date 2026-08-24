@@ -13,7 +13,7 @@ bug-reports: "https://github.com/rse-verification/vernfr/issues"
 depends: [
   "dune" {>= "3.13"}
   "ocaml" {>= "4.14"}
-  "frama-c" {= "33"}
+  "frama-c" {= "33.0"}
   "odoc" {with-doc}
 ]
 build: [
