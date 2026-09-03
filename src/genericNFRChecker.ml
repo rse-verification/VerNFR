@@ -10,7 +10,7 @@ class virtual genericNFRChecker ispec = object (self)
   method virtual name : string
   method ispec: Parser_lib.Ispec.ispec option = ispec
 
-  val unknown_loc = Cil_datatype.Location.unknown
+  val unknown_loc = Fileloc.unknown
   val mutable cil_file: Cil_types.file option = None
   val mutable entry_vis = None
   val mutable callable_vis = None
@@ -62,7 +62,7 @@ class virtual genericNFRChecker ispec = object (self)
     if loc = unknown_loc then
       Self.warning "%s" msg 
     else  
-      Self.warning "%s (at %a)" msg Printer.pp_location loc
+      Self.warning "%s (at %a)" msg Fileloc.pretty loc
 
   method get_ispec () = match ispec with
     | Some(ispec') -> ispec'
