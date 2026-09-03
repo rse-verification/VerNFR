@@ -9,8 +9,8 @@ specification contracts.
 ## Requirements
 
 - [Dune](https://dune.build) 3.13 or later
-- [OCaml](https://ocaml.org) 4.14 or later
-- [Frama-C](https://frama-c.com) 32
+- [OCaml](https://ocaml.org) 5.4 or later
+- [Frama-C](https://frama-c.com) 33
 
 ## Building
 
