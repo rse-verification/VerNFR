@@ -8,10 +8,10 @@
   (deps (alias "static.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
 (rule ; TEST #0 OF TEST FILE tests/staticvars/static.c
   (alias "static.0.exec.wtests")
-  (targets "static.err.log" "static.res.log"  )
-  (deps "static.0.exec.wtests" "../oracle/static.res.oracle" "../oracle/static.err.oracle"  "static.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (targets "static.0.err.log" "static.0.res.log"  )
+  (deps "static.0.exec.wtests" "../oracle/static.0.res.oracle" "../oracle/static.0.err.oracle"  "static.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "static.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    static.c -vernfr -nfr-static-vars > \"static.res.log\" 2> \"static.err.log\"" ))
+(action (run frama-c-wtests -brief "static.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    static.c -vernfr -nfr-static-vars > \"static.0.res.log\" 2> \"static.0.err.log\"" ))
 )
 (rule ; REPRODUCE TEST #0 OF TEST FILE "static.c"
   (alias "static.0.exec")
@@ -23,17 +23,17 @@
   (alias "static.0.exec.show")
   (deps  "static.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    static.c -vernfr -nfr-static-vars > \"static.res.log\" 2> \"static.err.log\"'"))
+(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    static.c -vernfr -nfr-static-vars > \"static.0.res.log\" 2> \"static.0.err.log\"'"))
 )
 (rule
   (alias "static.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/static.res.oracle" "static.res.log"))
+(action (diff "../oracle/static.0.res.oracle" "static.0.res.log"))
 )
 (rule
   (alias "static.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/static.err.oracle" "static.err.log"))
+(action (diff "../oracle/static.0.err.oracle" "static.0.err.log"))
 )
 (alias (name "static.diff")
   (deps (alias "static.0.exec.diff"))
@@ -50,10 +50,10 @@
   (deps (alias "static_f.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
 (rule ; TEST #0 OF TEST FILE tests/staticvars/static_f.c
   (alias "static_f.0.exec.wtests")
-  (targets "static_f.err.log" "static_f.res.log"  )
-  (deps "static_f.0.exec.wtests" "../oracle/static_f.res.oracle" "../oracle/static_f.err.oracle"  "static_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (targets "static_f.0.err.log" "static_f.0.res.log"  )
+  (deps "static_f.0.exec.wtests" "../oracle/static_f.0.res.oracle" "../oracle/static_f.0.err.oracle"  "static_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "static_f.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    static_f.c -vernfr -nfr-static-vars > \"static_f.res.log\" 2> \"static_f.err.log\"" ))
+(action (run frama-c-wtests -brief "static_f.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    static_f.c -vernfr -nfr-static-vars > \"static_f.0.res.log\" 2> \"static_f.0.err.log\"" ))
 )
 (rule ; REPRODUCE TEST #0 OF TEST FILE "static_f.c"
   (alias "static_f.0.exec")
@@ -65,17 +65,17 @@
   (alias "static_f.0.exec.show")
   (deps  "static_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    static_f.c -vernfr -nfr-static-vars > \"static_f.res.log\" 2> \"static_f.err.log\"'"))
+(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    static_f.c -vernfr -nfr-static-vars > \"static_f.0.res.log\" 2> \"static_f.0.err.log\"'"))
 )
 (rule
   (alias "static_f.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/static_f.res.oracle" "static_f.res.log"))
+(action (diff "../oracle/static_f.0.res.oracle" "static_f.0.res.log"))
 )
 (rule
   (alias "static_f.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/static_f.err.oracle" "static_f.err.log"))
+(action (diff "../oracle/static_f.0.err.oracle" "static_f.0.err.log"))
 )
 (alias (name "static_f.diff")
   (deps (alias "static_f.0.exec.diff"))

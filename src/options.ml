@@ -2,7 +2,7 @@ let help_msg = "Plugin for varifying non-functional requirements"
 
 module Self = Plugin.Register
   (struct
-    let name = "vernfr"
+    let name = "VerNFR"
     let shortname = "nfr"
     let help = help_msg
   end)

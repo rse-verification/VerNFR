@@ -3,14 +3,14 @@
 [nfr] Running StaticVariableChecker
 [nfr] Warning: Variable timer does not have static storage (at tmon_b.c:9)
 [nfr] Running onlyEntryPointsDeclaredChecker
-[nfr] Warning: The function get_tmon_timer is defined as non-static but not in the list of entry functions (at tmon_b.c:27)
+[nfr] Warning: The function get_tmon_timer is defined as non-static but not in the list of entry functions (at tmon_b.c:27-29)
 [nfr] Running whiteListFunCallsChecker
 [nfr] Warning: Function call to xmon_warn_write, which is not in the list of included functions for external header file warnings.h (at tmon_b.c:23)
 [nfr] Running NoFunctionPointersChecker
 [nfr] Running NoFunctionDefinitionsChecker
-[nfr] Warning: Found function definition: tmon_init (at tmon_b.c:11)
-[nfr] Warning: Found function definition: tmon_step (at tmon_b.c:15)
-[nfr] Warning: Found function definition: get_tmon_timer (at tmon_b.c:27)
+[nfr] Warning: Found function definition: tmon_init (at tmon_b.c:11-13)
+[nfr] Warning: Found function definition: tmon_step (at tmon_b.c:15-25)
+[nfr] Warning: Found function definition: get_tmon_timer (at tmon_b.c:27-29)
 [nfr] Running properInitChecker
 [nfr] getting inouts next
 [nfr] All variables used have been initialised properly in tmon_init

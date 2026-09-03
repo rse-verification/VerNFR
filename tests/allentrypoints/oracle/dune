@@ -1,5 +1,5 @@
-(rule (target "entry_f.err.oracle") (mode fallback) (action (write-file "entry_f.err.oracle" "")))
-(rule (target "entry_f.res.oracle") (mode fallback) (action (write-file "entry_f.res.oracle" "")))
-(rule (target "entry.err.oracle") (mode fallback) (action (write-file "entry.err.oracle" "")))
-(rule (target "entry.res.oracle") (mode fallback) (action (write-file "entry.res.oracle" "")))
+(rule (target "entry_f.0.err.oracle") (mode fallback) (action (write-file "entry_f.0.err.oracle" "")))
+(rule (target "entry_f.0.res.oracle") (mode fallback) (action (write-file "entry_f.0.res.oracle" "")))
+(rule (target "entry.0.err.oracle") (mode fallback) (action (write-file "entry.0.err.oracle" "")))
+(rule (target "entry.0.res.oracle") (mode fallback) (action (write-file "entry.0.res.oracle" "")))
 

@@ -84,10 +84,10 @@ class properInitChecker ispec = object (self)
     let ispec = Option.get self#ispec in
     let no_init_vars = List.fold_left
       (fun acc g -> match g with 
-        | GVar(vi, {init = None}, _) -> Locations.Zone.join (Locations.zone_of_varinfo vi) acc
+        | GVar(vi, {init = None}, _) -> Memory_zone.join (Locations.zone_of_varinfo vi) acc
         | _ -> acc  
       )
-      Locations.Zone.bottom
+      Memory_zone.bottom
       f.globals 
     in
     Self.feedback "getting inouts next";
@@ -107,9 +107,9 @@ class properInitChecker ispec = object (self)
         (*TODO: Do we care if some kf is not defined? (should be sound anyway)*)
         let pred_kfs = List.filter_map Utils.vi_to_kf_opt pred_vis in
         let pred_outs = List.fold_left
-          (fun acc kf -> Locations.Zone.join 
+          (fun acc kf -> Memory_zone.join 
             (Kernel_function.Map.find kf all_inouts).over_outputs acc)
-          Locations.Zone.bottom
+          Memory_zone.bottom
           pred_kfs
         in
         (*Get current entry points inputs*)
@@ -117,23 +117,23 @@ class properInitChecker ispec = object (self)
 
 
         let entry_ins = (Kernel_function.Map.find entry_kf all_inouts).over_inputs in
-        Self.debug ~level:4 "e_ins: %a" Locations.Zone.pretty entry_ins;
+        Self.debug ~level:4 "e_ins: %a" Memory_zone.pretty entry_ins;
         (* we start with the global vars without explicit init, then we remove all 
           outputs for predecessor functions, and then take the intersection with the current entry
         *)
 
-        let inputs_no_init = Locations.Zone.meet 
+        let inputs_no_init = Memory_zone.meet 
           entry_ins
-          (Locations.Zone.diff no_init_vars pred_outs)
+          (Memory_zone.diff no_init_vars pred_outs)
         in
-        if Locations.Zone.is_bottom inputs_no_init then
+        if Memory_zone.is_bottom inputs_no_init then
           Self.feedback "All variables used have been initialised properly in %a"
             Printer.pp_varinfo entry_vi
         else 
           self#print_error (Format.asprintf "The following variables uses their \
             default value in %a: %a" 
             Printer.pp_varinfo (entry_vi)
-            Locations.Zone.pretty inputs_no_init)
+            Memory_zone.pretty inputs_no_init)
 
     in
     List.iter check_fn ispec.entry_fns;

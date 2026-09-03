@@ -1,5 +1,6 @@
 /* run.config
    FILTER: sed -E 's/\([0-9]+ms(-[0-9]+ms)*\)//g'
+   FILTER: sed -E 's/Alt-Ergo [0-9]+\.[0-9]+\.[0-9]+/Alt-Ergo/g'
    OPT: -wp -wp-rte
 */
 #include "limits.h"
