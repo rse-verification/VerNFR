@@ -1,7 +1,7 @@
 {
   "dir": "tests/isola2026/result",
   "info": "TEST #0 OF TEST FILE tests/isola2026/utils.c",
-  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.0.res.unfiltered-log\" 2> \"utils.0.err.unfiltered-log\"",
+  "cmd": "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.0.res.unfiltered-log\" 2> \"utils.0.err.unfiltered-log\"",
   "out": "utils.0.res.log",
   "err": "utils.0.err.log",
   "tmpout": "utils.0.res.unfiltered-log",

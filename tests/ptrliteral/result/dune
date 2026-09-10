@@ -1,48 +1,6 @@
 (copy_files ../*.*)
 (alias (name runtest)
   (deps (alias runtest_config)))
-; TEST FILE "ptrliteral_f.c"
-(alias (name "ptrliteral_f.wtests")
-  (deps (alias "ptrliteral_f.0.exec.wtests"))) ; to performs all sub-tests related to a file
-(alias (name "ptrliteral_f.c")
-  (deps (alias "ptrliteral_f.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
-(rule ; TEST #0 OF TEST FILE tests/ptrliteral/ptrliteral_f.c
-  (alias "ptrliteral_f.0.exec.wtests")
-  (targets "ptrliteral_f.0.err.log" "ptrliteral_f.0.res.log"  )
-  (deps "ptrliteral_f.0.exec.wtests" "../oracle/ptrliteral_f.0.res.oracle" "../oracle/ptrliteral_f.0.err.oracle"  "ptrliteral_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "ptrliteral_f.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    ptrliteral_f.c -vernfr -nfr-check-ptr-literals > \"ptrliteral_f.0.res.log\" 2> \"ptrliteral_f.0.err.log\"" ))
-)
-(rule ; REPRODUCE TEST #0 OF TEST FILE "ptrliteral_f.c"
-  (alias "ptrliteral_f.0.exec")
-  (deps  "ptrliteral_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    ptrliteral_f.c -vernfr -nfr-check-ptr-literals")))
-)
-(rule ; SHOW TEST COMMAND #0 OF TEST FILE "ptrliteral_f.c"
-  (alias "ptrliteral_f.0.exec.show")
-  (deps  "ptrliteral_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    ptrliteral_f.c -vernfr -nfr-check-ptr-literals > \"ptrliteral_f.0.res.log\" 2> \"ptrliteral_f.0.err.log\"'"))
-)
-(rule
-  (alias "ptrliteral_f.0.exec.diff")
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/ptrliteral_f.0.res.oracle" "ptrliteral_f.0.res.log"))
-)
-(rule
-  (alias "ptrliteral_f.0.exec.diff")
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/ptrliteral_f.0.err.oracle" "ptrliteral_f.0.err.log"))
-)
-(alias (name "ptrliteral_f.diff")
-  (deps (alias "ptrliteral_f.0.exec.diff"))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-)
-(alias (name "runtest_config")
-  (deps (alias "ptrliteral_f.diff"))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-)
 ; TEST FILE "ptrliteral.c"
 (alias (name "ptrliteral.wtests")
   (deps (alias "ptrliteral.0.exec.wtests"))) ; to performs all sub-tests related to a file
@@ -53,19 +11,19 @@
   (targets "ptrliteral.0.err.log" "ptrliteral.0.res.log"  )
   (deps "ptrliteral.0.exec.wtests" "../oracle/ptrliteral.0.res.oracle" "../oracle/ptrliteral.0.err.oracle"  "ptrliteral.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "ptrliteral.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    ptrliteral.c -vernfr -nfr-check-ptr-literals > \"ptrliteral.0.res.log\" 2> \"ptrliteral.0.err.log\"" ))
+(action (run frama-c-wtests -brief "ptrliteral.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    ptrliteral.c -vernfr -nfr-check-ptr-literals > \"ptrliteral.0.res.log\" 2> \"ptrliteral.0.err.log\"" ))
 )
 (rule ; REPRODUCE TEST #0 OF TEST FILE "ptrliteral.c"
   (alias "ptrliteral.0.exec")
   (deps  "ptrliteral.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    ptrliteral.c -vernfr -nfr-check-ptr-literals")))
+(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    ptrliteral.c -vernfr -nfr-check-ptr-literals")))
 )
 (rule ; SHOW TEST COMMAND #0 OF TEST FILE "ptrliteral.c"
   (alias "ptrliteral.0.exec.show")
   (deps  "ptrliteral.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    ptrliteral.c -vernfr -nfr-check-ptr-literals > \"ptrliteral.0.res.log\" 2> \"ptrliteral.0.err.log\"'"))
+(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    ptrliteral.c -vernfr -nfr-check-ptr-literals > \"ptrliteral.0.res.log\" 2> \"ptrliteral.0.err.log\"'"))
 )
 (rule
   (alias "ptrliteral.0.exec.diff")
@@ -83,6 +41,48 @@
 )
 (alias (name "runtest_config")
   (deps (alias "ptrliteral.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
+; TEST FILE "ptrliteral_f.c"
+(alias (name "ptrliteral_f.wtests")
+  (deps (alias "ptrliteral_f.0.exec.wtests"))) ; to performs all sub-tests related to a file
+(alias (name "ptrliteral_f.c")
+  (deps (alias "ptrliteral_f.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
+(rule ; TEST #0 OF TEST FILE tests/ptrliteral/ptrliteral_f.c
+  (alias "ptrliteral_f.0.exec.wtests")
+  (targets "ptrliteral_f.0.err.log" "ptrliteral_f.0.res.log"  )
+  (deps "ptrliteral_f.0.exec.wtests" "../oracle/ptrliteral_f.0.res.oracle" "../oracle/ptrliteral_f.0.err.oracle"  "ptrliteral_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (run frama-c-wtests -brief "ptrliteral_f.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    ptrliteral_f.c -vernfr -nfr-check-ptr-literals > \"ptrliteral_f.0.res.log\" 2> \"ptrliteral_f.0.err.log\"" ))
+)
+(rule ; REPRODUCE TEST #0 OF TEST FILE "ptrliteral_f.c"
+  (alias "ptrliteral_f.0.exec")
+  (deps  "ptrliteral_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    ptrliteral_f.c -vernfr -nfr-check-ptr-literals")))
+)
+(rule ; SHOW TEST COMMAND #0 OF TEST FILE "ptrliteral_f.c"
+  (alias "ptrliteral_f.0.exec.show")
+  (deps  "ptrliteral_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    ptrliteral_f.c -vernfr -nfr-check-ptr-literals > \"ptrliteral_f.0.res.log\" 2> \"ptrliteral_f.0.err.log\"'"))
+)
+(rule
+  (alias "ptrliteral_f.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/ptrliteral_f.0.res.oracle" "ptrliteral_f.0.res.log"))
+)
+(rule
+  (alias "ptrliteral_f.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/ptrliteral_f.0.err.oracle" "ptrliteral_f.0.err.log"))
+)
+(alias (name "ptrliteral_f.diff")
+  (deps (alias "ptrliteral_f.0.exec.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
+(alias (name "runtest_config")
+  (deps (alias "ptrliteral_f.diff"))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
 )
 (alias (name disabled_runtest)
