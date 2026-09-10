@@ -1,48 +1,6 @@
 (copy_files ../*.*)
 (alias (name runtest)
   (deps (alias runtest_config)))
-; TEST FILE "typedefs_f.c"
-(alias (name "typedefs_f.wtests")
-  (deps (alias "typedefs_f.0.exec.wtests"))) ; to performs all sub-tests related to a file
-(alias (name "typedefs_f.c")
-  (deps (alias "typedefs_f.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
-(rule ; TEST #0 OF TEST FILE tests/typedefs/typedefs_f.c
-  (alias "typedefs_f.0.exec.wtests")
-  (targets "typedefs_f.0.err.log" "typedefs_f.0.res.log"  )
-  (deps "typedefs_f.0.exec.wtests" "../oracle/typedefs_f.0.res.oracle" "../oracle/typedefs_f.0.err.oracle"  "typedefs_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "typedefs_f.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    typedefs_f.c -vernfr -nfr-typedefs > \"typedefs_f.0.res.log\" 2> \"typedefs_f.0.err.log\"" ))
-)
-(rule ; REPRODUCE TEST #0 OF TEST FILE "typedefs_f.c"
-  (alias "typedefs_f.0.exec")
-  (deps  "typedefs_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    typedefs_f.c -vernfr -nfr-typedefs")))
-)
-(rule ; SHOW TEST COMMAND #0 OF TEST FILE "typedefs_f.c"
-  (alias "typedefs_f.0.exec.show")
-  (deps  "typedefs_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    typedefs_f.c -vernfr -nfr-typedefs > \"typedefs_f.0.res.log\" 2> \"typedefs_f.0.err.log\"'"))
-)
-(rule
-  (alias "typedefs_f.0.exec.diff")
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/typedefs_f.0.res.oracle" "typedefs_f.0.res.log"))
-)
-(rule
-  (alias "typedefs_f.0.exec.diff")
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/typedefs_f.0.err.oracle" "typedefs_f.0.err.log"))
-)
-(alias (name "typedefs_f.diff")
-  (deps (alias "typedefs_f.0.exec.diff"))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-)
-(alias (name "runtest_config")
-  (deps (alias "typedefs_f.diff"))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-)
 ; TEST FILE "typedefs.c"
 (alias (name "typedefs.wtests")
   (deps (alias "typedefs.0.exec.wtests"))) ; to performs all sub-tests related to a file
@@ -53,19 +11,19 @@
   (targets "typedefs.0.err.log" "typedefs.0.res.log"  )
   (deps "typedefs.0.exec.wtests" "../oracle/typedefs.0.res.oracle" "../oracle/typedefs.0.err.oracle"  "typedefs.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "typedefs.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    typedefs.c -vernfr -nfr-typedefs > \"typedefs.0.res.log\" 2> \"typedefs.0.err.log\"" ))
+(action (run frama-c-wtests -brief "typedefs.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    typedefs.c -vernfr -nfr-typedefs > \"typedefs.0.res.log\" 2> \"typedefs.0.err.log\"" ))
 )
 (rule ; REPRODUCE TEST #0 OF TEST FILE "typedefs.c"
   (alias "typedefs.0.exec")
   (deps  "typedefs.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    typedefs.c -vernfr -nfr-typedefs")))
+(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    typedefs.c -vernfr -nfr-typedefs")))
 )
 (rule ; SHOW TEST COMMAND #0 OF TEST FILE "typedefs.c"
   (alias "typedefs.0.exec.show")
   (deps  "typedefs.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    typedefs.c -vernfr -nfr-typedefs > \"typedefs.0.res.log\" 2> \"typedefs.0.err.log\"'"))
+(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    typedefs.c -vernfr -nfr-typedefs > \"typedefs.0.res.log\" 2> \"typedefs.0.err.log\"'"))
 )
 (rule
   (alias "typedefs.0.exec.diff")
@@ -83,6 +41,48 @@
 )
 (alias (name "runtest_config")
   (deps (alias "typedefs.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
+; TEST FILE "typedefs_f.c"
+(alias (name "typedefs_f.wtests")
+  (deps (alias "typedefs_f.0.exec.wtests"))) ; to performs all sub-tests related to a file
+(alias (name "typedefs_f.c")
+  (deps (alias "typedefs_f.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
+(rule ; TEST #0 OF TEST FILE tests/typedefs/typedefs_f.c
+  (alias "typedefs_f.0.exec.wtests")
+  (targets "typedefs_f.0.err.log" "typedefs_f.0.res.log"  )
+  (deps "typedefs_f.0.exec.wtests" "../oracle/typedefs_f.0.res.oracle" "../oracle/typedefs_f.0.err.oracle"  "typedefs_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (run frama-c-wtests -brief "typedefs_f.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    typedefs_f.c -vernfr -nfr-typedefs > \"typedefs_f.0.res.log\" 2> \"typedefs_f.0.err.log\"" ))
+)
+(rule ; REPRODUCE TEST #0 OF TEST FILE "typedefs_f.c"
+  (alias "typedefs_f.0.exec")
+  (deps  "typedefs_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    typedefs_f.c -vernfr -nfr-typedefs")))
+)
+(rule ; SHOW TEST COMMAND #0 OF TEST FILE "typedefs_f.c"
+  (alias "typedefs_f.0.exec.show")
+  (deps  "typedefs_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    typedefs_f.c -vernfr -nfr-typedefs > \"typedefs_f.0.res.log\" 2> \"typedefs_f.0.err.log\"'"))
+)
+(rule
+  (alias "typedefs_f.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/typedefs_f.0.res.oracle" "typedefs_f.0.res.log"))
+)
+(rule
+  (alias "typedefs_f.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/typedefs_f.0.err.oracle" "typedefs_f.0.err.log"))
+)
+(alias (name "typedefs_f.diff")
+  (deps (alias "typedefs_f.0.exec.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
+(alias (name "runtest_config")
+  (deps (alias "typedefs_f.diff"))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
 )
 (alias (name disabled_runtest)

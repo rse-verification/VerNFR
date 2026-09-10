@@ -4,7 +4,8 @@ VerNFR is a [Frama-C](https://frama-c.com) plugin for
 verification of non-functional requirements of C code.
 Currently, it supports specifying and verifying properties
 related to control flow and data flow using interface
-specification contracts.
+specification contracts. The underlying principles and implementation of
+the plugin is described in [this research paper](https://arxiv.org/abs/2605.21532v2).
 
 ## Requirements
 
