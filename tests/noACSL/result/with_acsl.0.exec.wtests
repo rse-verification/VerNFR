@@ -1,0 +1,9 @@
+{
+  "dir": "tests/noACSL/result",
+  "info": "TEST #0 OF TEST FILE tests/noACSL/with_acsl.c",
+  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    with_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all > \"with_acsl.0.res.log\" 2> \"with_acsl.0.err.log\"",
+  "out": "with_acsl.0.res.log",
+  "err": "with_acsl.0.err.log",
+  "oracle_out": "../oracle/with_acsl.0.res.oracle",
+  "oracle_err": "../oracle/with_acsl.0.err.oracle"
+}
