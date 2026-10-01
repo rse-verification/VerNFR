@@ -42,6 +42,9 @@ int sum_upto(int n) {
 int example(int x) {
   int y = x + 1;
 
+  //@ ghost int ghost_y = y;
+  //@ ghost ghost_y = ghost_y + 1;
+
   /* Statement contract */
   /*@
     requires x >= 0;

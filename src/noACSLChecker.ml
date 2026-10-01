@@ -20,8 +20,17 @@ class noACSLChecker ispec = object (self)
         Cil.SkipChildren
     | _ -> Cil.DoChildren
 
-  method! vstmt_aux sk = match sk.skind with
-    | _ -> Cil.DoChildren
+  method! vvdec vi =
+    if vi.vghost then
+      self#print_error ~loc:vi.vdecl
+        (Format.asprintf "Found ghost declaration %a" Printer.pp_varinfo vi);
+    Cil.DoChildren
+
+  method! vstmt_aux stmt =
+    if stmt.ghost then
+      self#print_error ~loc:(Cil_datatype.Stmt.loc stmt)
+        "Found ghost statement";
+    Cil.DoChildren
 
   method! vspec spec =
     if not (self#noACSLInFunspec spec) then

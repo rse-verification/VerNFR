@@ -14,7 +14,10 @@
 [nfr] Warning: Found loop ACSL annotation loop variant n - i; (at with_acsl.c:29)
 [nfr] Warning: Found statement ACSL annotation assert s ≡ (n * (n - 1)) / 2; (at with_acsl.c:37)
 [nfr] Warning: Found ACSL function contract for sum_upto
+[nfr] Warning: Found ghost declaration ghost_y (at with_acsl.c:45)
+[nfr] Warning: Found ghost statement (at with_acsl.c:45)
+[nfr] Warning: Found ghost statement (at with_acsl.c:46)
 [nfr] Warning: Found statement ACSL annotation requires x ≥ 0;
                                   ensures y > x;
-[nfr] Warning: Found statement ACSL annotation admit y > 1000; (at with_acsl.c:55)
+[nfr] Warning: Found statement ACSL annotation admit y > 1000; (at with_acsl.c:58)
 [nfr] Warning: Found ACSL function contract for declared_fun
