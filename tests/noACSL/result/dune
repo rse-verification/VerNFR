@@ -1,6 +1,48 @@
 (copy_files ../*.*)
 (alias (name runtest)
   (deps (alias runtest_config)))
+; TEST FILE "with_acsl.c"
+(alias (name "with_acsl.wtests")
+  (deps (alias "with_acsl.0.exec.wtests"))) ; to performs all sub-tests related to a file
+(alias (name "with_acsl.c")
+  (deps (alias "with_acsl.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
+(rule ; TEST #0 OF TEST FILE tests/noACSL/with_acsl.c
+  (alias "with_acsl.0.exec.wtests")
+  (targets "with_acsl.0.err.log" "with_acsl.0.res.log"  )
+  (deps "with_acsl.0.exec.wtests" "../oracle/with_acsl.0.res.oracle" "../oracle/with_acsl.0.err.oracle"  "with_acsl.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (run frama-c-wtests -brief "with_acsl.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    with_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all > \"with_acsl.0.res.log\" 2> \"with_acsl.0.err.log\"" ))
+)
+(rule ; REPRODUCE TEST #0 OF TEST FILE "with_acsl.c"
+  (alias "with_acsl.0.exec")
+  (deps  "with_acsl.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    with_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all")))
+)
+(rule ; SHOW TEST COMMAND #0 OF TEST FILE "with_acsl.c"
+  (alias "with_acsl.0.exec.show")
+  (deps  "with_acsl.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    with_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all > \"with_acsl.0.res.log\" 2> \"with_acsl.0.err.log\"'"))
+)
+(rule
+  (alias "with_acsl.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/with_acsl.0.res.oracle" "with_acsl.0.res.log"))
+)
+(rule
+  (alias "with_acsl.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/with_acsl.0.err.oracle" "with_acsl.0.err.log"))
+)
+(alias (name "with_acsl.diff")
+  (deps (alias "with_acsl.0.exec.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
+(alias (name "runtest_config")
+  (deps (alias "with_acsl.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
 ; TEST FILE "without_acsl.c"
 (alias (name "without_acsl.wtests")
   (deps (alias "without_acsl.0.exec.wtests"))) ; to performs all sub-tests related to a file
@@ -11,19 +53,19 @@
   (targets "without_acsl.0.err.log" "without_acsl.0.res.log"  )
   (deps "without_acsl.0.exec.wtests" "../oracle/without_acsl.0.res.oracle" "../oracle/without_acsl.0.err.oracle"  "without_acsl.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "without_acsl.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    without_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all > \"without_acsl.0.res.log\" 2> \"without_acsl.0.err.log\"" ))
+(action (run frama-c-wtests -brief "without_acsl.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    without_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all > \"without_acsl.0.res.log\" 2> \"without_acsl.0.err.log\"" ))
 )
 (rule ; REPRODUCE TEST #0 OF TEST FILE "without_acsl.c"
   (alias "without_acsl.0.exec")
   (deps  "without_acsl.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    without_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all")))
+(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    without_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all")))
 )
 (rule ; SHOW TEST COMMAND #0 OF TEST FILE "without_acsl.c"
   (alias "without_acsl.0.exec.show")
   (deps  "without_acsl.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    without_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all > \"without_acsl.0.res.log\" 2> \"without_acsl.0.err.log\"'"))
+(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    without_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all > \"without_acsl.0.res.log\" 2> \"without_acsl.0.err.log\"'"))
 )
 (rule
   (alias "without_acsl.0.exec.diff")
@@ -43,46 +85,46 @@
   (deps (alias "without_acsl.diff"))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
 )
-; TEST FILE "with_acsl.c"
-(alias (name "with_acsl.wtests")
-  (deps (alias "with_acsl.0.exec.wtests"))) ; to performs all sub-tests related to a file
-(alias (name "with_acsl.c")
-  (deps (alias "with_acsl.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
-(rule ; TEST #0 OF TEST FILE tests/noACSL/with_acsl.c
-  (alias "with_acsl.0.exec.wtests")
-  (targets "with_acsl.0.err.log" "with_acsl.0.res.log"  )
-  (deps "with_acsl.0.exec.wtests" "../oracle/with_acsl.0.res.oracle" "../oracle/with_acsl.0.err.oracle"  "with_acsl.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+; TEST FILE "behaviors.c"
+(alias (name "behaviors.wtests")
+  (deps (alias "behaviors.0.exec.wtests"))) ; to performs all sub-tests related to a file
+(alias (name "behaviors.c")
+  (deps (alias "behaviors.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
+(rule ; TEST #0 OF TEST FILE tests/noACSL/behaviors.c
+  (alias "behaviors.0.exec.wtests")
+  (targets "behaviors.0.err.log" "behaviors.0.res.log"  )
+  (deps "behaviors.0.exec.wtests" "../oracle/behaviors.0.res.oracle" "../oracle/behaviors.0.err.oracle"  "behaviors.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "with_acsl.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    with_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all > \"with_acsl.0.res.log\" 2> \"with_acsl.0.err.log\"" ))
+(action (run frama-c-wtests -brief "behaviors.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    behaviors.c -vernfr -nfr-no-acsl -keep-unused-functions=all > \"behaviors.0.res.log\" 2> \"behaviors.0.err.log\"" ))
 )
-(rule ; REPRODUCE TEST #0 OF TEST FILE "with_acsl.c"
-  (alias "with_acsl.0.exec")
-  (deps  "with_acsl.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+(rule ; REPRODUCE TEST #0 OF TEST FILE "behaviors.c"
+  (alias "behaviors.0.exec")
+  (deps  "behaviors.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    with_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all")))
+(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    behaviors.c -vernfr -nfr-no-acsl -keep-unused-functions=all")))
 )
-(rule ; SHOW TEST COMMAND #0 OF TEST FILE "with_acsl.c"
-  (alias "with_acsl.0.exec.show")
-  (deps  "with_acsl.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+(rule ; SHOW TEST COMMAND #0 OF TEST FILE "behaviors.c"
+  (alias "behaviors.0.exec.show")
+  (deps  "behaviors.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    with_acsl.c -vernfr -nfr-no-acsl -keep-unused-functions=all > \"with_acsl.0.res.log\" 2> \"with_acsl.0.err.log\"'"))
-)
-(rule
-  (alias "with_acsl.0.exec.diff")
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/with_acsl.0.res.oracle" "with_acsl.0.res.log"))
+(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    behaviors.c -vernfr -nfr-no-acsl -keep-unused-functions=all > \"behaviors.0.res.log\" 2> \"behaviors.0.err.log\"'"))
 )
 (rule
-  (alias "with_acsl.0.exec.diff")
+  (alias "behaviors.0.exec.diff")
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/with_acsl.0.err.oracle" "with_acsl.0.err.log"))
+(action (diff "../oracle/behaviors.0.res.oracle" "behaviors.0.res.log"))
 )
-(alias (name "with_acsl.diff")
-  (deps (alias "with_acsl.0.exec.diff"))
+(rule
+  (alias "behaviors.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/behaviors.0.err.oracle" "behaviors.0.err.log"))
+)
+(alias (name "behaviors.diff")
+  (deps (alias "behaviors.0.exec.diff"))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
 )
 (alias (name "runtest_config")
-  (deps (alias "with_acsl.diff"))
+  (deps (alias "behaviors.diff"))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
 )
 (alias (name disabled_runtest)

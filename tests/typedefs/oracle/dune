@@ -1,5 +1,5 @@
-(rule (target "typedefs_f.0.err.oracle") (mode fallback) (action (write-file "typedefs_f.0.err.oracle" "")))
-(rule (target "typedefs_f.0.res.oracle") (mode fallback) (action (write-file "typedefs_f.0.res.oracle" "")))
 (rule (target "typedefs.0.err.oracle") (mode fallback) (action (write-file "typedefs.0.err.oracle" "")))
 (rule (target "typedefs.0.res.oracle") (mode fallback) (action (write-file "typedefs.0.res.oracle" "")))
+(rule (target "typedefs_f.0.err.oracle") (mode fallback) (action (write-file "typedefs_f.0.err.oracle" "")))
+(rule (target "typedefs_f.0.res.oracle") (mode fallback) (action (write-file "typedefs_f.0.res.oracle" "")))
 

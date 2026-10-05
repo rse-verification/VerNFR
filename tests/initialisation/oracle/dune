@@ -1,5 +1,5 @@
-(rule (target "initialisation.0.err.oracle") (mode fallback) (action (write-file "initialisation.0.err.oracle" "")))
-(rule (target "initialisation.0.res.oracle") (mode fallback) (action (write-file "initialisation.0.res.oracle" "")))
 (rule (target "initialisation_f.0.err.oracle") (mode fallback) (action (write-file "initialisation_f.0.err.oracle" "")))
 (rule (target "initialisation_f.0.res.oracle") (mode fallback) (action (write-file "initialisation_f.0.res.oracle" "")))
+(rule (target "initialisation.0.err.oracle") (mode fallback) (action (write-file "initialisation.0.err.oracle" "")))
+(rule (target "initialisation.0.res.oracle") (mode fallback) (action (write-file "initialisation.0.res.oracle" "")))
 

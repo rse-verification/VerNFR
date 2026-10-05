@@ -1,0 +1,3 @@
+[kernel] Parsing behaviors.c (with preprocessing)
+[nfr] Running noACSLChecker
+[nfr] Warning: Found ACSL function contract for binary_search

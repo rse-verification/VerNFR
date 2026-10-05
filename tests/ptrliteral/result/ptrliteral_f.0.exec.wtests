@@ -1,7 +1,7 @@
 {
   "dir": "tests/ptrliteral/result",
   "info": "TEST #0 OF TEST FILE tests/ptrliteral/ptrliteral_f.c",
-  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    ptrliteral_f.c -vernfr -nfr-check-ptr-literals > \"ptrliteral_f.0.res.log\" 2> \"ptrliteral_f.0.err.log\"",
+  "cmd": "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    ptrliteral_f.c -vernfr -nfr-check-ptr-literals > \"ptrliteral_f.0.res.log\" 2> \"ptrliteral_f.0.err.log\"",
   "out": "ptrliteral_f.0.res.log",
   "err": "ptrliteral_f.0.err.log",
   "oracle_out": "../oracle/ptrliteral_f.0.res.oracle",

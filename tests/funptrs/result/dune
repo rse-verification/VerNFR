@@ -1,48 +1,6 @@
 (copy_files ../*.*)
 (alias (name runtest)
   (deps (alias runtest_config)))
-; TEST FILE "funptr_f.c"
-(alias (name "funptr_f.wtests")
-  (deps (alias "funptr_f.0.exec.wtests"))) ; to performs all sub-tests related to a file
-(alias (name "funptr_f.c")
-  (deps (alias "funptr_f.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
-(rule ; TEST #0 OF TEST FILE tests/funptrs/funptr_f.c
-  (alias "funptr_f.0.exec.wtests")
-  (targets "funptr_f.0.err.log" "funptr_f.0.res.log"  )
-  (deps "funptr_f.0.exec.wtests" "../oracle/funptr_f.0.res.oracle" "../oracle/funptr_f.0.err.oracle"  "funptr_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "funptr_f.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    funptr_f.c -vernfr -nfr-fun-ptrs > \"funptr_f.0.res.log\" 2> \"funptr_f.0.err.log\"" ))
-)
-(rule ; REPRODUCE TEST #0 OF TEST FILE "funptr_f.c"
-  (alias "funptr_f.0.exec")
-  (deps  "funptr_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    funptr_f.c -vernfr -nfr-fun-ptrs")))
-)
-(rule ; SHOW TEST COMMAND #0 OF TEST FILE "funptr_f.c"
-  (alias "funptr_f.0.exec.show")
-  (deps  "funptr_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    funptr_f.c -vernfr -nfr-fun-ptrs > \"funptr_f.0.res.log\" 2> \"funptr_f.0.err.log\"'"))
-)
-(rule
-  (alias "funptr_f.0.exec.diff")
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/funptr_f.0.res.oracle" "funptr_f.0.res.log"))
-)
-(rule
-  (alias "funptr_f.0.exec.diff")
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/funptr_f.0.err.oracle" "funptr_f.0.err.log"))
-)
-(alias (name "funptr_f.diff")
-  (deps (alias "funptr_f.0.exec.diff"))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-)
-(alias (name "runtest_config")
-  (deps (alias "funptr_f.diff"))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-)
 ; TEST FILE "funptr.c"
 (alias (name "funptr.wtests")
   (deps (alias "funptr.0.exec.wtests"))) ; to performs all sub-tests related to a file
@@ -53,19 +11,19 @@
   (targets "funptr.0.err.log" "funptr.0.res.log"  )
   (deps "funptr.0.exec.wtests" "../oracle/funptr.0.res.oracle" "../oracle/funptr.0.err.oracle"  "funptr.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "funptr.0.exec.wtests" "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    funptr.c -vernfr -nfr-fun-ptrs > \"funptr.0.res.log\" 2> \"funptr.0.err.log\"" ))
+(action (run frama-c-wtests -brief "funptr.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    funptr.c -vernfr -nfr-fun-ptrs > \"funptr.0.res.log\" 2> \"funptr.0.err.log\"" ))
 )
 (rule ; REPRODUCE TEST #0 OF TEST FILE "funptr.c"
   (alias "funptr.0.exec")
   (deps  "funptr.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    funptr.c -vernfr -nfr-fun-ptrs")))
+(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    funptr.c -vernfr -nfr-fun-ptrs")))
 )
 (rule ; SHOW TEST COMMAND #0 OF TEST FILE "funptr.c"
   (alias "funptr.0.exec.show")
   (deps  "funptr.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    funptr.c -vernfr -nfr-fun-ptrs > \"funptr.0.res.log\" 2> \"funptr.0.err.log\"'"))
+(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    funptr.c -vernfr -nfr-fun-ptrs > \"funptr.0.res.log\" 2> \"funptr.0.err.log\"'"))
 )
 (rule
   (alias "funptr.0.exec.diff")
@@ -83,6 +41,48 @@
 )
 (alias (name "runtest_config")
   (deps (alias "funptr.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
+; TEST FILE "funptr_f.c"
+(alias (name "funptr_f.wtests")
+  (deps (alias "funptr_f.0.exec.wtests"))) ; to performs all sub-tests related to a file
+(alias (name "funptr_f.c")
+  (deps (alias "funptr_f.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
+(rule ; TEST #0 OF TEST FILE tests/funptrs/funptr_f.c
+  (alias "funptr_f.0.exec.wtests")
+  (targets "funptr_f.0.err.log" "funptr_f.0.res.log"  )
+  (deps "funptr_f.0.exec.wtests" "../oracle/funptr_f.0.res.oracle" "../oracle/funptr_f.0.err.oracle"  "funptr_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (run frama-c-wtests -brief "funptr_f.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    funptr_f.c -vernfr -nfr-fun-ptrs > \"funptr_f.0.res.log\" 2> \"funptr_f.0.err.log\"" ))
+)
+(rule ; REPRODUCE TEST #0 OF TEST FILE "funptr_f.c"
+  (alias "funptr_f.0.exec")
+  (deps  "funptr_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    funptr_f.c -vernfr -nfr-fun-ptrs")))
+)
+(rule ; SHOW TEST COMMAND #0 OF TEST FILE "funptr_f.c"
+  (alias "funptr_f.0.exec.show")
+  (deps  "funptr_f.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    funptr_f.c -vernfr -nfr-fun-ptrs > \"funptr_f.0.res.log\" 2> \"funptr_f.0.err.log\"'"))
+)
+(rule
+  (alias "funptr_f.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/funptr_f.0.res.oracle" "funptr_f.0.res.log"))
+)
+(rule
+  (alias "funptr_f.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/funptr_f.0.err.oracle" "funptr_f.0.err.log"))
+)
+(alias (name "funptr_f.diff")
+  (deps (alias "funptr_f.0.exec.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
+(alias (name "runtest_config")
+  (deps (alias "funptr_f.diff"))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
 )
 (alias (name disabled_runtest)

@@ -1,7 +1,7 @@
 {
   "dir": "tests/callable/result",
   "info": "TEST #0 OF TEST FILE tests/callable/callable_f.c",
-  "cmd": "frama-c -check -no-autoload-plugins -add-symbolic-path=\"/home/jamilon/Documents/vernfr/_build/default:.\" -load-plugin=vernfr,wp    callable_f.c  -vernfr -nfr-check-calls -main f_10ms -nfr-ispec callable_spec.is > \"callable_f.0.res.log\" 2> \"callable_f.0.err.log\"",
+  "cmd": "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    callable_f.c  -vernfr -nfr-check-calls -main f_10ms -nfr-ispec callable_spec.is > \"callable_f.0.res.log\" 2> \"callable_f.0.err.log\"",
   "out": "callable_f.0.res.log",
   "err": "callable_f.0.err.log",
   "oracle_out": "../oracle/callable_f.0.res.oracle",

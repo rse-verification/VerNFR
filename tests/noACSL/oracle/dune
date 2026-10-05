@@ -1,5 +1,7 @@
-(rule (target "without_acsl.0.err.oracle") (mode fallback) (action (write-file "without_acsl.0.err.oracle" "")))
-(rule (target "without_acsl.0.res.oracle") (mode fallback) (action (write-file "without_acsl.0.res.oracle" "")))
 (rule (target "with_acsl.0.err.oracle") (mode fallback) (action (write-file "with_acsl.0.err.oracle" "")))
 (rule (target "with_acsl.0.res.oracle") (mode fallback) (action (write-file "with_acsl.0.res.oracle" "")))
+(rule (target "without_acsl.0.err.oracle") (mode fallback) (action (write-file "without_acsl.0.err.oracle" "")))
+(rule (target "without_acsl.0.res.oracle") (mode fallback) (action (write-file "without_acsl.0.res.oracle" "")))
+(rule (target "behaviors.0.err.oracle") (mode fallback) (action (write-file "behaviors.0.err.oracle" "")))
+(rule (target "behaviors.0.res.oracle") (mode fallback) (action (write-file "behaviors.0.res.oracle" "")))
 
