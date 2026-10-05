@@ -71,6 +71,13 @@ module CheckFunPtrs = Self.False
     to a function pointer. Verification is at call sites." 
 end)
 
+module CheckNoACSL = Self.False
+(struct
+  let option_name = "-nfr-no-acsl"
+  let help = "when on (off by default), emits a warning if there are any ACSL annotations in the code \
+              Checks global annotations, local annotations (instructions), function contracts, and loop invariants" 
+end)
+
 module CheckNoDefs = Self.False
 (struct
   let option_name = "-nfr-no-fun-defs"

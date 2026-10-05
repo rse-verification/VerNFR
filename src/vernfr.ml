@@ -1,6 +1,7 @@
 (* open Parser_lib.Ispec  *)
 open DataflowChecker 
 open ControlFlowChecker
+open NoACSLChecker
 (* open GenericNFRChecker *)
 open Options
 (* open Cil_types *)
@@ -68,7 +69,9 @@ let run () =
     (if ChecNoPtrArith.get () || CheckAll.get () then 
           (new noPtrArithmeticsChecker ispec)#run ());
     (if CheckTypedefs.get () || CheckAll.get () then 
-          (new typeDefChecker ispec)#run ())
+          (new typeDefChecker ispec)#run ());
+    (if CheckNoACSL.get () then
+            (new noACSLChecker ispec)#run ())
     (* ;
     (if CheckExternalCallOrder.get () || CheckAll.get () then 
           (new externalCallsChecker ispec)#run ()) *)

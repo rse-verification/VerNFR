@@ -1,5 +1,7 @@
 # VerNFR
 
+[![Build Status](https://github.com/rse-verification/VerNFR/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/rse-verification/VerNFR/actions/workflows/build.yml)
+
 VerNFR is a [Frama-C](https://frama-c.com) plugin for
 verification of non-functional requirements of C code.
 Currently, it supports specifying and verifying properties
@@ -55,6 +57,7 @@ following verification tasks:
 - T9: All memory locations are explicitly initialized or written to before they are read `-nfr-proper-init`  
 - T10: Absence of pointer literals `-nfr-check-ptr-literals`  
 - T11: Typedefs are always used when possible `-nfr-typedefs` 
+- T12: Absence of ACSL annotations `-nfr-no-acsl`
 
 Every task except T4 can be run directly using Frama-C with the option indicated in the list above.
 For example, T1 can be run using the following command: 
@@ -100,4 +103,11 @@ module tmon {
     tmon_sens_create < tmon_sens_read, tmon_warn_create < tmon_warn_write
   }
 }
+```
+
+### Testing
+
+After adding tests with oracles based on frama-c-ptests, the following command should be run:
+```shell
+frama-c-ptests -dune-alias runtest -macro-default-options "-check -no-autoload-plugins"
 ```
