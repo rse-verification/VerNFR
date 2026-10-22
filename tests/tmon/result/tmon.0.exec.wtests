@@ -1,0 +1,9 @@
+{
+  "dir": "tests/tmon/result",
+  "info": "TEST #0 OF TEST FILE tests/tmon/tmon.c",
+  "cmd": "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    tmon.c  -vernfr -keep-unused-functions \"all\" -keep-unused-types -nfr-ispec tmon.is -nfr-check-calls -nfr-fun-ptrs -nfr-no-fun-defs -nfr-all-entries-defined -nfr-only-entries -nfr-static-vars -nfr-proper-init -nfr-check-ptr-literals -nfr-typedefs -wp -wp-rte > \"tmon.0.res.log\" 2> \"tmon.0.err.log\"",
+  "out": "tmon.0.res.log",
+  "err": "tmon.0.err.log",
+  "oracle_out": "../oracle/tmon.0.res.oracle",
+  "oracle_err": "../oracle/tmon.0.err.oracle"
+}
