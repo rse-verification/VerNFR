@@ -1,5 +1,9 @@
+#include "warnings.h"
+#include "sensors.h"
+
 static int timer;
 
+/*@ ensures timer == 5; */
 void tmon_init(void);
 
 /*@

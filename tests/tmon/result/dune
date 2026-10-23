@@ -9,19 +9,19 @@
 (rule ; TEST #0 OF TEST FILE tests/tmon/tmon.c
   (alias "tmon.0.exec.wtests")
   (targets "tmon.0.err.log" "tmon.0.res.log"  )
-  (deps "tmon.0.exec.wtests" "../oracle/tmon.0.res.oracle" "../oracle/tmon.0.err.oracle"  "tmon.c"  "utils.h" "sensors.h" "warnings.h" "tmon.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (deps "tmon.0.exec.wtests" "../oracle/tmon.0.res.oracle" "../oracle/tmon.0.err.oracle"  "tmon.c"  "sensors.h" "warnings.h" "utils.h" "tmon.h" "rtdb.h" "tmon.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
 (action (run frama-c-wtests -brief "tmon.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    tmon.c  -vernfr -keep-unused-functions \"all\" -keep-unused-types -nfr-ispec tmon.is -nfr-check-calls -nfr-fun-ptrs -nfr-no-fun-defs -nfr-all-entries-defined -nfr-only-entries -nfr-static-vars -nfr-proper-init -nfr-check-ptr-literals -nfr-typedefs -wp -wp-rte > \"tmon.0.res.log\" 2> \"tmon.0.err.log\"" ))
 )
 (rule ; REPRODUCE TEST #0 OF TEST FILE "tmon.c"
   (alias "tmon.0.exec")
-  (deps  "tmon.c"  "utils.h" "sensors.h" "warnings.h" "tmon.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (deps  "tmon.c"  "sensors.h" "warnings.h" "utils.h" "tmon.h" "rtdb.h" "tmon.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
 (action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    tmon.c  -vernfr -keep-unused-functions \"all\" -keep-unused-types -nfr-ispec tmon.is -nfr-check-calls -nfr-fun-ptrs -nfr-no-fun-defs -nfr-all-entries-defined -nfr-only-entries -nfr-static-vars -nfr-proper-init -nfr-check-ptr-literals -nfr-typedefs -wp -wp-rte")))
 )
 (rule ; SHOW TEST COMMAND #0 OF TEST FILE "tmon.c"
   (alias "tmon.0.exec.show")
-  (deps  "tmon.c"  "utils.h" "sensors.h" "warnings.h" "tmon.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (deps  "tmon.c"  "sensors.h" "warnings.h" "utils.h" "tmon.h" "rtdb.h" "tmon.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
 (action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    tmon.c  -vernfr -keep-unused-functions \"all\" -keep-unused-types -nfr-ispec tmon.is -nfr-check-calls -nfr-fun-ptrs -nfr-no-fun-defs -nfr-all-entries-defined -nfr-only-entries -nfr-static-vars -nfr-proper-init -nfr-check-ptr-literals -nfr-typedefs -wp -wp-rte > \"tmon.0.res.log\" 2> \"tmon.0.err.log\"'"))
 )
