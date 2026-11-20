@@ -6,8 +6,8 @@
   "err": "utils.0.err.log",
   "tmpout": "utils.0.res.unfiltered-log",
   "tmperr": "utils.0.err.unfiltered-log",
-  "sedout": "cat utils.0.res.unfiltered-log | sed -E 's/Alt-Ergo [0-9]+\\.[0-9]+\\.[0-9]+/Alt-Ergo/g' | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' > \"utils.0.res.log\"",
-  "sederr": "cat utils.0.err.unfiltered-log | sed -E 's/Alt-Ergo [0-9]+\\.[0-9]+\\.[0-9]+/Alt-Ergo/g' | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' > \"utils.0.err.log\"",
+  "sedout": "cat utils.0.res.unfiltered-log | sed -E -e 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' -e 's/^  Alt-Ergo[^:]*:/  Alt-Ergo:/' -e 's/^  ([A-Za-z][A-Za-z -]*[A-Za-z]):[[:space:]]+/  \\1: /' -e 's/[[:space:]]+$//' -e '/^\\[wp\\] \\[Cache\\]/d' > \"utils.0.res.log\"",
+  "sederr": "cat utils.0.err.unfiltered-log | sed -E -e 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' -e 's/^  Alt-Ergo[^:]*:/  Alt-Ergo:/' -e 's/^  ([A-Za-z][A-Za-z -]*[A-Za-z]):[[:space:]]+/  \\1: /' -e 's/[[:space:]]+$//' -e '/^\\[wp\\] \\[Cache\\]/d' > \"utils.0.err.log\"",
   "oracle_out": "../oracle/utils.0.res.oracle",
   "oracle_err": "../oracle/utils.0.err.oracle"
 }

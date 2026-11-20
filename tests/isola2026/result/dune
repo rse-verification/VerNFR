@@ -1,6 +1,58 @@
 (copy_files ../*.*)
 (alias (name runtest)
   (deps (alias runtest_config)))
+; TEST FILE "utils.c"
+(alias (name "utils.wtests")
+  (deps (alias "utils.0.exec.wtests"))) ; to performs all sub-tests related to a file
+(alias (name "utils.c")
+  (deps (alias "utils.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
+(rule ; TEST #0 OF TEST FILE tests/isola2026/utils.c
+  (alias "utils.0.exec.wtests")
+  (targets "utils.0.err.unfiltered-log" "utils.0.res.unfiltered-log"  )
+  (deps "utils.0.exec.wtests" "../oracle/utils.0.res.oracle" "../oracle/utils.0.err.oracle"  "utils.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (run frama-c-wtests -brief "utils.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.0.res.unfiltered-log\" 2> \"utils.0.err.unfiltered-log\""  "cat utils.0.res.unfiltered-log | sed -E -e 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' -e 's/^  Alt-Ergo[^:]*:/  Alt-Ergo:/' -e 's/^  ([A-Za-z][A-Za-z -]*[A-Za-z]):[[:space:]]+/  \\1: /' -e 's/[[:space:]]+$//' -e '/^\\[wp\\] \\[Cache\\]/d' > \"utils.0.res.log\"" "cat utils.0.err.unfiltered-log | sed -E -e 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' -e 's/^  Alt-Ergo[^:]*:/  Alt-Ergo:/' -e 's/^  ([A-Za-z][A-Za-z -]*[A-Za-z]):[[:space:]]+/  \\1: /' -e 's/[[:space:]]+$//' -e '/^\\[wp\\] \\[Cache\\]/d' > \"utils.0.err.log\""))
+)
+(rule ; FILTER RES #0 OF TEST FILE "utils.c"
+  (deps "utils.0.res.unfiltered-log")
+         (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (with-stdout-to "utils.0.res.log" (with-accepted-exit-codes (or 0 1 2 125) (system "cat utils.0.res.unfiltered-log | sed -E -e 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' -e 's/^  Alt-Ergo[^:]*:/  Alt-Ergo:/' -e 's/^  ([A-Za-z][A-Za-z -]*[A-Za-z]):[[:space:]]+/  \\1: /' -e 's/[[:space:]]+$//' -e '/^\\[wp\\] \\[Cache\\]/d'"))))
+)
+(rule ; FILTER ERR #0 OF TEST FILE "utils.c"
+  (deps "utils.0.err.unfiltered-log")
+         (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (with-stdout-to "utils.0.err.log" (with-accepted-exit-codes (or 0 1 2 125) (system "cat utils.0.err.unfiltered-log | sed -E -e 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' -e 's/^  Alt-Ergo[^:]*:/  Alt-Ergo:/' -e 's/^  ([A-Za-z][A-Za-z -]*[A-Za-z]):[[:space:]]+/  \\1: /' -e 's/[[:space:]]+$//' -e '/^\\[wp\\] \\[Cache\\]/d'"))))
+)
+(rule ; REPRODUCE TEST #0 OF TEST FILE "utils.c"
+  (alias "utils.0.exec")
+  (deps  "utils.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    utils.c -wp -wp-rte")))
+)
+(rule ; SHOW TEST COMMAND #0 OF TEST FILE "utils.c"
+  (alias "utils.0.exec.show")
+  (deps  "utils.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.0.res.unfiltered-log\" 2> \"utils.0.err.unfiltered-log\"'"))
+)
+(rule
+  (alias "utils.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/utils.0.res.oracle" "utils.0.res.log"))
+)
+(rule
+  (alias "utils.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/utils.0.err.oracle" "utils.0.err.log"))
+)
+(alias (name "utils.diff")
+  (deps (alias "utils.0.exec.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
+(alias (name "runtest_config")
+  (deps (alias "utils.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
 ; TEST FILE "tmon_b.c"
 (alias (name "tmon_b.wtests")
   (deps (alias "tmon_b.0.exec.wtests"))) ; to performs all sub-tests related to a file
@@ -83,58 +135,6 @@
 )
 (alias (name "runtest_config")
   (deps (alias "tmon_a.diff"))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-)
-; TEST FILE "utils.c"
-(alias (name "utils.wtests")
-  (deps (alias "utils.0.exec.wtests"))) ; to performs all sub-tests related to a file
-(alias (name "utils.c")
-  (deps (alias "utils.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
-(rule ; TEST #0 OF TEST FILE tests/isola2026/utils.c
-  (alias "utils.0.exec.wtests")
-  (targets "utils.0.err.unfiltered-log" "utils.0.res.unfiltered-log"  )
-  (deps "utils.0.exec.wtests" "../oracle/utils.0.res.oracle" "../oracle/utils.0.err.oracle"  "utils.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (run frama-c-wtests -brief "utils.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.0.res.unfiltered-log\" 2> \"utils.0.err.unfiltered-log\""  "cat utils.0.res.unfiltered-log | sed -E 's/Alt-Ergo [0-9]+\\.[0-9]+\\.[0-9]+/Alt-Ergo/g' | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' > \"utils.0.res.log\"" "cat utils.0.err.unfiltered-log | sed -E 's/Alt-Ergo [0-9]+\\.[0-9]+\\.[0-9]+/Alt-Ergo/g' | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g' > \"utils.0.err.log\""))
-)
-(rule ; FILTER RES #0 OF TEST FILE "utils.c"
-  (deps "utils.0.res.unfiltered-log")
-         (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (with-stdout-to "utils.0.res.log" (with-accepted-exit-codes (or 0 1 2 125) (system "cat utils.0.res.unfiltered-log | sed -E 's/Alt-Ergo [0-9]+\\.[0-9]+\\.[0-9]+/Alt-Ergo/g' | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g'"))))
-)
-(rule ; FILTER ERR #0 OF TEST FILE "utils.c"
-  (deps "utils.0.err.unfiltered-log")
-         (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (with-stdout-to "utils.0.err.log" (with-accepted-exit-codes (or 0 1 2 125) (system "cat utils.0.err.unfiltered-log | sed -E 's/Alt-Ergo [0-9]+\\.[0-9]+\\.[0-9]+/Alt-Ergo/g' | sed -E 's/\\([0-9]+ms(-[0-9]+ms)*\\)//g'"))))
-)
-(rule ; REPRODUCE TEST #0 OF TEST FILE "utils.c"
-  (alias "utils.0.exec")
-  (deps  "utils.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    utils.c -wp -wp-rte")))
-)
-(rule ; SHOW TEST COMMAND #0 OF TEST FILE "utils.c"
-  (alias "utils.0.exec.show")
-  (deps  "utils.c"  (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    utils.c -wp -wp-rte > \"utils.0.res.unfiltered-log\" 2> \"utils.0.err.unfiltered-log\"'"))
-)
-(rule
-  (alias "utils.0.exec.diff")
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/utils.0.res.oracle" "utils.0.res.log"))
-)
-(rule
-  (alias "utils.0.exec.diff")
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-(action (diff "../oracle/utils.0.err.oracle" "utils.0.err.log"))
-)
-(alias (name "utils.diff")
-  (deps (alias "utils.0.exec.diff"))
-  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
-)
-(alias (name "runtest_config")
-  (deps (alias "utils.diff"))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
 )
 (alias (name disabled_runtest)
