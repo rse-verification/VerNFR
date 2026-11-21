@@ -40,6 +40,11 @@ why3 config detect
 
 When provers are available, use `dune test` to run all regression tests.
 
+After adding tests with oracles based on frama-c-ptests, the following command should be run:
+```shell
+frama-c-ptests -dune-alias runtest -macro-default-options "-check -no-autoload-plugins"
+```
+
 ## Verification tasks and options
 
 VerNFR takes a C module as input (usually a `.c` file and an `.h` file)
@@ -57,7 +62,7 @@ following verification tasks:
 - T9: All memory locations are explicitly initialized or written to before they are read `-nfr-proper-init`  
 - T10: Absence of pointer literals `-nfr-check-ptr-literals`  
 - T11: Typedefs are always used when possible `-nfr-typedefs` 
-- T12: Absence of ACSL annotations `-nfr-no-acsl`
+- T12: Absence of ACSL annotations `-nfr-no-acsl`, optionally with a whitelist `-nfr-acsl-allow`
 
 Every task except T4 can be run directly using Frama-C with the option indicated in the list above.
 For example, T1 can be run using the following command: 
@@ -67,6 +72,33 @@ frama-c -vernfr -nfr-check-calls -nfr-ispec test.is test.c
 ```
 
 See `frama-c -nfr-h` for more information on how to use VerNFR with Frama-C. 
+
+### ACSL whitelist
+
+T12 supports checking for ACSL annotations that could be used to make verification
+with WP pass illegitimately. By default, `-nfr-no-acsl` reports every ACSL annotation
+(and all ghost code). The option `-nfr-acsl-allow` takes a comma-separated list
+of annotation categories that are not reported. All these categories are proof
+obligations, which WP must prove before using them:
+
+- `assert`: `assert` and `check` annotations
+- `loop-invariant`: `loop invariant` clauses
+- `loop-assigns`: `loop assigns` clauses
+- `loop-variant`: `loop variant` clauses
+
+Annotations with the `admit` modifier (e.g., `admit loop invariant`) are
+assumptions and are always reported. For example, the following command
+reports all ACSL annotations except assertions and loop annotations:
+
+```shell
+frama-c -vernfr -nfr-no-acsl -nfr-acsl-allow assert,loop-invariant,loop-assigns,loop-variant test.c
+```
+
+Note that WP proves only partial correctness by default. A non-terminating
+loop makes any postcondition hold vacuously, so allowing loop invariants
+should be combined with termination checking in WP.
+
+## Entry point script
 
 For convenience, we provide the script `./scripts/all-checks.sh` as an entry point for
 VerNFR that performs all verification tasks. The script takes as input a module
@@ -103,11 +135,4 @@ module tmon {
     tmon_sens_create < tmon_sens_read, tmon_warn_create < tmon_warn_write
   }
 }
-```
-
-### Testing
-
-After adding tests with oracles based on frama-c-ptests, the following command should be run:
-```shell
-frama-c-ptests -dune-alias runtest -macro-default-options "-check -no-autoload-plugins"
 ```

@@ -1,0 +1,10 @@
+{
+  "dir": "tests/noACSL/result",
+  "info": "TEST #0 OF TEST FILE tests/noACSL/allow_unknown.c",
+  "cmd": "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    allow_unknown.c -vernfr -nfr-no-acsl -keep-unused-functions=all -nfr-acsl-allow assert,axiom > \"allow_unknown.0.res.log\" 2> \"allow_unknown.0.err.log\"",
+  "ret_code": 1,
+  "out": "allow_unknown.0.res.log",
+  "err": "allow_unknown.0.err.log",
+  "oracle_out": "../oracle/allow_unknown.0.res.oracle",
+  "oracle_err": "../oracle/allow_unknown.0.err.oracle"
+}

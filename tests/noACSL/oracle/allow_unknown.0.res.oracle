@@ -1,0 +1,3 @@
+[kernel] Parsing allow_unknown.c (with preprocessing)
+[nfr] User Error: unknown ACSL categories for -nfr-acsl-allow: axiom (known: assert, loop-invariant, loop-assigns, loop-variant)
+[kernel] Plug-in nfr aborted: invalid user input.
