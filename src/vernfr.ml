@@ -71,7 +71,9 @@ let run () =
     (if CheckTypedefs.get () || CheckAll.get () then 
           (new typeDefChecker ispec)#run ());
     (if CheckNoACSL.get () then
-            (new noACSLChecker ispec)#run ())
+            (new noACSLChecker ispec)#run ()
+     else if not (AllowedACSL.is_empty ()) then
+            Self.warning "-nfr-acsl-allow has no effect without -nfr-no-acsl")
     (* ;
     (if CheckExternalCallOrder.get () || CheckAll.get () then 
           (new externalCallsChecker ispec)#run ()) *)

@@ -1,0 +1,9 @@
+{
+  "dir": "tests/noACSL/result",
+  "info": "TEST #2 OF TEST FILE tests/noACSL/allow_acsl.c",
+  "cmd": "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    allow_acsl.c -vernfr -keep-unused-functions=all -nfr-acsl-allow assert > \"allow_acsl.2.res.log\" 2> \"allow_acsl.2.err.log\"",
+  "out": "allow_acsl.2.res.log",
+  "err": "allow_acsl.2.err.log",
+  "oracle_out": "../oracle/allow_acsl.2.res.oracle",
+  "oracle_err": "../oracle/allow_acsl.2.err.oracle"
+}

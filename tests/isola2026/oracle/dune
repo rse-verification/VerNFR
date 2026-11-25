@@ -1,7 +1,7 @@
+(rule (target "utils.0.err.oracle") (mode fallback) (action (write-file "utils.0.err.oracle" "")))
+(rule (target "utils.0.res.oracle") (mode fallback) (action (write-file "utils.0.res.oracle" "")))
 (rule (target "tmon_b.0.err.oracle") (mode fallback) (action (write-file "tmon_b.0.err.oracle" "")))
 (rule (target "tmon_b.0.res.oracle") (mode fallback) (action (write-file "tmon_b.0.res.oracle" "")))
 (rule (target "tmon_a.0.err.oracle") (mode fallback) (action (write-file "tmon_a.0.err.oracle" "")))
 (rule (target "tmon_a.0.res.oracle") (mode fallback) (action (write-file "tmon_a.0.res.oracle" "")))
-(rule (target "utils.0.err.oracle") (mode fallback) (action (write-file "utils.0.err.oracle" "")))
-(rule (target "utils.0.res.oracle") (mode fallback) (action (write-file "utils.0.res.oracle" "")))
 

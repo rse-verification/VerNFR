@@ -1,0 +1,15 @@
+[kernel] Parsing allow_acsl.c (with preprocessing)
+[nfr] Running noACSLChecker
+[nfr] Warning: Found global ACSL annotation axiomatic Math {
+                                 logic ℤ square(ℤ x) ;
+                                 
+                                 axiom square_nonnegative:
+                                   ∀ ℤ x; square(x) ≥ 0;
+                                 
+                               }
+   (at allow_acsl.c:8-13)
+[nfr] Warning: Found ACSL function contract for sum_upto
+[nfr] Warning: Found ghost declaration g (at allow_acsl.c:55)
+[nfr] Warning: Found loop ACSL annotation admit loop invariant i ≤ n; (at allow_acsl.c:45)
+[nfr] Warning: Found statement ACSL annotation admit i ≡ 0; (at allow_acsl.c:52)
+[nfr] Warning: Found ghost statement (at allow_acsl.c:55)

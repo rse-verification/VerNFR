@@ -75,7 +75,17 @@ module CheckNoACSL = Self.False
 (struct
   let option_name = "-nfr-no-acsl"
   let help = "when on (off by default), emits a warning if there are any ACSL annotations in the code \
-              Checks global annotations, local annotations (instructions), function contracts, and loop invariants" 
+              Checks global annotations, local annotations (instructions), function contracts, and loop invariants"
+end)
+
+module AllowedACSL = Self.String_set
+(struct
+  let option_name = "-nfr-acsl-allow"
+  let arg_name = "c1,c2,..."
+  let help = "comma-separated whitelist of ACSL annotation categories that -nfr-no-acsl \
+              does not warn about (empty by default, i.e., all ACSL is reported). \
+              Allowed categories: assert (assert and check), loop-invariant, loop-assigns, \
+              loop-variant. Annotations with the admit modifier are always reported"
 end)
 
 module CheckNoDefs = Self.False

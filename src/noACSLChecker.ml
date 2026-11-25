@@ -1,8 +1,11 @@
 open GenericNFRChecker
 open Cil_types
 
+let allowedACSLCategories =
+  [ "assert"; "loop-invariant"; "loop-assigns"; "loop-variant" ]
+
 class noACSLChecker ispec = object (self)
-  inherit genericNFRChecker ispec
+  inherit genericNFRChecker ispec as super
 
   method name = "noACSLChecker"
 
@@ -43,7 +46,38 @@ class noACSLChecker ispec = object (self)
         (Format.asprintf "Found ACSL function contract for %s" name));
     Cil.SkipChildren
 
+  (* Whitelist categories for code annotations (-nfr-acsl-allow). Only
+     annotations that WP must prove before using them (obligations) can be
+     whitelisted; annotations with the admit modifier are assumptions and
+     are never allowed. *)
+  method acslCategory ca =
+    let not_admit tp = tp.tp_kind <> Admit in
+    match ca.annot_content with
+    | AAssert (_, tp) when not_admit tp -> Some "assert"
+    | AInvariant (_, true, tp) when not_admit tp -> Some "loop-invariant"
+    | AAssigns _ -> Some "loop-assigns"
+    | AVariant _ -> Some "loop-variant"
+    | _ -> None
+
+  method isAllowed ca =
+    match self#acslCategory ca with
+    | Some c -> Options.AllowedACSL.mem c
+    | None -> false
+
+  method! run () =
+    let unknown =
+      Options.AllowedACSL.fold
+        (fun c acc -> if List.mem c allowedACSLCategories then acc else c :: acc)
+        []
+    in
+    if unknown <> [] then
+      Options.Self.abort "unknown ACSL categories for -nfr-acsl-allow: %s (known: %s)"
+        (String.concat ", " (List.rev unknown))
+        (String.concat ", " allowedACSLCategories);
+    super#run ()
+
   method! vcode_annot ca =
+    if self#isAllowed ca then Cil.SkipChildren else
     let loc =
       Option.value ~default:Fileloc.unknown
         (Cil_datatype.Code_annotation.loc ca)

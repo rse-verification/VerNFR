@@ -1,7 +1,6 @@
 /* run.config
    DEPS: utils.h
-   FILTER: sed -E 's/\([0-9]+ms(-[0-9]+ms)*\)//g'
-   FILTER: sed -E 's/Alt-Ergo [0-9]+\.[0-9]+\.[0-9]+/Alt-Ergo/g'
+   FILTER: sed -E -e 's/\([0-9]+ms(-[0-9]+ms)*\)//g' -e 's/^  Alt-Ergo[^:]*:/  Alt-Ergo:/' -e 's/^  ([A-Za-z][A-Za-z -]*[A-Za-z]):[[:space:]]+/  \1: /' -e 's/[[:space:]]+$//' -e '/^\[wp\] \[Cache\]/d'
    OPT: -wp -wp-rte
 */
 #include "limits.h"

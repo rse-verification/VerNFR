@@ -1,0 +1,2 @@
+[kernel] Parsing allow_acsl.c (with preprocessing)
+[nfr] Warning: -nfr-acsl-allow has no effect without -nfr-no-acsl
