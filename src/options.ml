@@ -85,7 +85,8 @@ module AllowedACSL = Self.String_set
   let help = "comma-separated whitelist of ACSL annotation categories that -nfr-no-acsl \
               does not warn about (empty by default, i.e., all ACSL is reported). \
               Allowed categories: assert (assert and check), loop-invariant, loop-assigns, \
-              loop-variant. Annotations with the admit modifier are always reported"
+              loop-variant, lemma, predicate, logic-function. Annotations with the \
+              admit modifier are always reported"
 end)
 
 module CheckNoDefs = Self.False

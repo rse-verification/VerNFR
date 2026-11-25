@@ -1,0 +1,9 @@
+{
+  "dir": "tests/noACSL/result",
+  "info": "TEST #2 OF TEST FILE tests/noACSL/global_allow.c",
+  "cmd": "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    global_allow.c -vernfr -nfr-no-acsl -keep-unused-functions=all -nfr-acsl-allow predicate > \"global_allow.2.res.log\" 2> \"global_allow.2.err.log\"",
+  "out": "global_allow.2.res.log",
+  "err": "global_allow.2.err.log",
+  "oracle_out": "../oracle/global_allow.2.res.oracle",
+  "oracle_err": "../oracle/global_allow.2.err.oracle"
+}
