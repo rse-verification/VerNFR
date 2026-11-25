@@ -1,0 +1,17 @@
+[kernel] Parsing global_allow.c (with preprocessing)
+[nfr] Running noACSLChecker
+[nfr] Warning: Found global ACSL annotation logic ℤ inc(ℤ x) = x + 1;
+   (at global_allow.c:8)
+[nfr] Warning: Found global ACSL annotation lemma inc_nonnegative:
+                                 ∀ ℤ x; nonnegative(x) ⇒ nonnegative(inc(x));
+   (at global_allow.c:9-10)
+[nfr] Warning: Found global ACSL annotation axiomatic GlobalMath {
+                                 predicate bounded(ℤ x) = 0 ≤ x ≤ 10;
+                                 
+                                 logic ℤ dec(ℤ x) = x - 1;
+                                 
+                                 lemma dec_bounded:
+                                   ∀ ℤ x; 1 ≤ x ≤ 10 ⇒ bounded(dec(x));
+                                 
+                               }
+   (at global_allow.c:13-18)
