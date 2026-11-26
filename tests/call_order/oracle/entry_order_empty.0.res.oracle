@@ -1,0 +1,4 @@
+[kernel] Parsing entry_order_empty.c (with preprocessing)
+[nfr] Parsed ispec successfully!
+[nfr] Running whiteListFunCallsChecker
+[nfr] Running externalCallOrderChecker

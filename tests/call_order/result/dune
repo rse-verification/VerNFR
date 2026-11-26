@@ -85,6 +85,48 @@
   (deps (alias "simple_call_order_bad.diff"))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
 )
+; TEST FILE "entry_order_cycle.c"
+(alias (name "entry_order_cycle.wtests")
+  (deps (alias "entry_order_cycle.0.exec.wtests"))) ; to performs all sub-tests related to a file
+(alias (name "entry_order_cycle.c")
+  (deps (alias "entry_order_cycle.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
+(rule ; TEST #0 OF TEST FILE tests/call_order/entry_order_cycle.c
+  (alias "entry_order_cycle.0.exec.wtests")
+  (targets "entry_order_cycle.0.err.log" "entry_order_cycle.0.res.log"  )
+  (deps "entry_order_cycle.0.exec.wtests" "../oracle/entry_order_cycle.0.res.oracle" "../oracle/entry_order_cycle.0.err.oracle"  "entry_order_cycle.c"  "entry_order_cycle.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (run frama-c-wtests -brief "entry_order_cycle.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    entry_order_cycle.c  -vernfr -nfr-ispec entry_order_cycle.is -nfr-check-calls -nfr-external-call-order -keep-unused-functions all -keep-unused-types > \"entry_order_cycle.0.res.log\" 2> \"entry_order_cycle.0.err.log\"" ))
+)
+(rule ; REPRODUCE TEST #0 OF TEST FILE "entry_order_cycle.c"
+  (alias "entry_order_cycle.0.exec")
+  (deps  "entry_order_cycle.c"  "entry_order_cycle.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    entry_order_cycle.c  -vernfr -nfr-ispec entry_order_cycle.is -nfr-check-calls -nfr-external-call-order -keep-unused-functions all -keep-unused-types")))
+)
+(rule ; SHOW TEST COMMAND #0 OF TEST FILE "entry_order_cycle.c"
+  (alias "entry_order_cycle.0.exec.show")
+  (deps  "entry_order_cycle.c"  "entry_order_cycle.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    entry_order_cycle.c  -vernfr -nfr-ispec entry_order_cycle.is -nfr-check-calls -nfr-external-call-order -keep-unused-functions all -keep-unused-types > \"entry_order_cycle.0.res.log\" 2> \"entry_order_cycle.0.err.log\"'"))
+)
+(rule
+  (alias "entry_order_cycle.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/entry_order_cycle.0.res.oracle" "entry_order_cycle.0.res.log"))
+)
+(rule
+  (alias "entry_order_cycle.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/entry_order_cycle.0.err.oracle" "entry_order_cycle.0.err.log"))
+)
+(alias (name "entry_order_cycle.diff")
+  (deps (alias "entry_order_cycle.0.exec.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
+(alias (name "runtest_config")
+  (deps (alias "entry_order_cycle.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
 ; TEST FILE "call_order_bad2.c"
 (alias (name "call_order_bad2.wtests")
   (deps (alias "call_order_bad2.0.exec.wtests"))) ; to performs all sub-tests related to a file
@@ -167,6 +209,48 @@
 )
 (alias (name "runtest_config")
   (deps (alias "call_order_bad1.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
+; TEST FILE "entry_order_empty.c"
+(alias (name "entry_order_empty.wtests")
+  (deps (alias "entry_order_empty.0.exec.wtests"))) ; to performs all sub-tests related to a file
+(alias (name "entry_order_empty.c")
+  (deps (alias "entry_order_empty.0.exec"))) ; to reproduce and visualize the all sub-test outputs related to a file
+(rule ; TEST #0 OF TEST FILE tests/call_order/entry_order_empty.c
+  (alias "entry_order_empty.0.exec.wtests")
+  (targets "entry_order_empty.0.err.log" "entry_order_empty.0.res.log"  )
+  (deps "entry_order_empty.0.exec.wtests" "../oracle/entry_order_empty.0.res.oracle" "../oracle/entry_order_empty.0.err.oracle"  "entry_order_empty.c"  "entry_order_empty.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp") )
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (run frama-c-wtests -brief "entry_order_empty.0.exec.wtests" "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    entry_order_empty.c  -vernfr -nfr-ispec entry_order_empty.is -nfr-check-calls -nfr-external-call-order -keep-unused-functions all -keep-unused-types > \"entry_order_empty.0.res.log\" 2> \"entry_order_empty.0.err.log\"" ))
+)
+(rule ; REPRODUCE TEST #0 OF TEST FILE "entry_order_empty.c"
+  (alias "entry_order_empty.0.exec")
+  (deps  "entry_order_empty.c"  "entry_order_empty.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (with-accepted-exit-codes 0 (system "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    entry_order_empty.c  -vernfr -nfr-ispec entry_order_empty.is -nfr-check-calls -nfr-external-call-order -keep-unused-functions all -keep-unused-types")))
+)
+(rule ; SHOW TEST COMMAND #0 OF TEST FILE "entry_order_empty.c"
+  (alias "entry_order_empty.0.exec.show")
+  (deps  "entry_order_empty.c"  "entry_order_empty.is" (package frama-c)  (package "frama-c-vernfr") (package "frama-c-wp")  (universe))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (system "echo 'frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    entry_order_empty.c  -vernfr -nfr-ispec entry_order_empty.is -nfr-check-calls -nfr-external-call-order -keep-unused-functions all -keep-unused-types > \"entry_order_empty.0.res.log\" 2> \"entry_order_empty.0.err.log\"'"))
+)
+(rule
+  (alias "entry_order_empty.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/entry_order_empty.0.res.oracle" "entry_order_empty.0.res.log"))
+)
+(rule
+  (alias "entry_order_empty.0.exec.diff")
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+(action (diff "../oracle/entry_order_empty.0.err.oracle" "entry_order_empty.0.err.log"))
+)
+(alias (name "entry_order_empty.diff")
+  (deps (alias "entry_order_empty.0.exec.diff"))
+  (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
+)
+(alias (name "runtest_config")
+  (deps (alias "entry_order_empty.diff"))
   (enabled_if (and true %{lib-available:frama-c-vernfr.core} %{lib-available:frama-c-wp.core}))
 )
 ; TEST FILE "call_order_ok.c"

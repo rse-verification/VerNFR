@@ -1,0 +1,5 @@
+[kernel] Parsing entry_order_cycle.c (with preprocessing)
+[nfr] Parsed ispec successfully!
+[nfr] Running whiteListFunCallsChecker
+[nfr] Running externalCallOrderChecker
+[nfr] Warning: The entry_order specification contains a cycle involving: cycle_a, cycle_b

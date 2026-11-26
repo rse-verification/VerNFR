@@ -1,0 +1,8 @@
+module entry_order_empty {
+  entry_functions: {
+    void empty_a(void), void empty_b(void)
+  }
+  entry_order: { }
+  external_calls: { }
+  external_call_order: { }
+}

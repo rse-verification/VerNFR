@@ -1,3 +1,4 @@
 [kernel] Parsing simple_call_order_bad.c (with preprocessing)
 [nfr] Parsed ispec successfully!
 [nfr] Running whiteListFunCallsChecker
+[nfr] Running externalCallOrderChecker

@@ -1,6 +1,7 @@
 (* open Parser_lib.Ispec  *)
 open DataflowChecker 
 open ControlFlowChecker
+open CallOrderChecker
 open NoACSLChecker
 (* open GenericNFRChecker *)
 open Options
@@ -73,10 +74,9 @@ let run () =
     (if CheckNoACSL.get () then
             (new noACSLChecker ispec)#run ()
      else if not (AllowedACSL.is_empty ()) then
-            Self.warning "-nfr-acsl-allow has no effect without -nfr-no-acsl")
-    (* ;
+            Self.warning "-nfr-acsl-allow has no effect without -nfr-no-acsl");
     (if CheckExternalCallOrder.get () || CheckAll.get () then 
-          (new externalCallsChecker ispec)#run ()) *)
+          (new externalCallOrderChecker ispec)#run ())
 
     (* add to frama-c main pipeline *)
     let () = Boot.Main.extend run
