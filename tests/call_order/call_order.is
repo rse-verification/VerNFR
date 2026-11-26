@@ -1,0 +1,21 @@
+module call_order {
+  entry_functions: {
+    void system_init(void), void system_run(void), void system_shutdown(void)
+  }
+  entry_order: {
+    system_init < system_run, system_init < system_shutdown
+  }
+  external_calls: {
+    devices.h: {
+      void power_on(void), void configure(void), void calibrate(void),
+      int sample(void), void publish(int value), void power_off(void)
+    }
+  }
+  external_call_order: {
+    power_on < configure,
+    configure < calibrate,
+    calibrate < sample,
+    sample < publish,
+    power_on < power_off
+  }
+}

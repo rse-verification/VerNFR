@@ -1,0 +1,3 @@
+[kernel] Parsing call_order_bad2.c (with preprocessing)
+[nfr] Parsed ispec successfully!
+[nfr] Running whiteListFunCallsChecker
