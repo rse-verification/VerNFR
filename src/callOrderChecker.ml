@@ -8,7 +8,7 @@ module StringSet = Set.Make(String)
 let call_order_emitter =
   Emitter.create
     "vernfr_call_order"
-    [Emitter.Code_annot]
+    [Emitter.Code_annot; Emitter.Funspec]
     ~correctness:[]
     ~tuning:[]
 
@@ -202,6 +202,9 @@ let ghost_assignment_stmt ~loc ghost_vi =
 let assertion_name lhs rhs =
   "nfr_call_order_" ^ lhs.ispec_fname ^ "_before_" ^ rhs.ispec_fname
 
+let preservation_behavior_name =
+  "nfr_call_order_preserves_ghosts"
+
 let ghost_var_called_predicate ~loc lhs rhs ghost_vi =
   let ghost_term = Cil.cvar_to_term ~loc ghost_vi in
   let one = Logic_const.tinteger ~loc 1 in
@@ -209,6 +212,18 @@ let ghost_var_called_predicate ~loc lhs rhs ghost_vi =
     ~loc
     ~names:[assertion_name lhs rhs]
     (Req, ghost_term, one)
+
+(* External callees are specified only by declarations in the module under
+   verification. To reason across such calls, WP needs a frame condition for
+   the generated ghost flags: unless VernFR itself sets a flag after an lhs
+   call, ordinary calls must preserve the whole generated call-order state. *)
+let ghost_var_preserved_predicate ~loc ghost_vi =
+  let current = Cil.cvar_to_term ~loc ghost_vi in
+  let old = Logic_const.told ~loc current in
+  Logic_const.prel
+    ~loc
+    ~names:["nfr_preserve_" ^ ghost_vi.vname]
+    (Req, current, old)
 
 class externalCallOrderChecker ispec = object (self)
   inherit genericNFRChecker ispec
@@ -259,6 +274,54 @@ class externalCallOrderChecker ispec = object (self)
           Printer.pp_varinfo var.ghost_vi
           lhs_name)
       vars
+
+  method private add_preservation_contracts constraints vars =
+    (* Add one generated behavior to every function that appears on either side
+       of a call-order constraint. The behavior says that all generated ghost
+       flags are unchanged by the call. This is intentionally conservative:
+       even lhs functions preserve the flags during the call itself; the
+       instrumentation marks the lhs as seen in a separate ghost assignment
+       immediately after the call site. *)
+    let ghost_vis =
+      StringMap.bindings vars |> List.map (fun (_, var) -> var.ghost_vi)
+    in
+    (* De-duplicate callees by current C name, since a function may appear in
+       several constraints. *)
+    let add_callee acc constraint_ =
+      acc
+      |> StringMap.add constraint_.lhs_vi.vname constraint_.lhs_vi
+      |> StringMap.add constraint_.rhs_vi.vname constraint_.rhs_vi
+    in
+    let callees = List.fold_left add_callee StringMap.empty constraints in
+    let add_contract _callee_name callee_vi =
+      try
+        let kf = Globals.Functions.get callee_vi in
+        let loc = callee_vi.vdecl in
+        let post_cond =
+          List.map
+            (fun ghost_vi ->
+              Normal,
+              Logic_const.new_predicate
+                (ghost_var_preserved_predicate ~loc ghost_vi))
+            ghost_vis
+        in
+        let behavior =
+          Cil.mk_behavior
+            ~name:preservation_behavior_name
+            ~post_cond
+            ()
+        in
+        (* Register through Annotations rather than mutating the funspec only:
+           this keeps Frama-C's annotation/property tables consistent, and also
+           makes the generated contract show up in the proof-project printer. *)
+        Annotations.add_behaviors call_order_emitter kf [behavior]
+      with Not_found ->
+        Options.Self.debug ~level:3
+          "Skipping ghost-preservation contract for unregistered callee %a"
+          Printer.pp_varinfo callee_vi
+    in
+    if ghost_vis <> [] then
+      StringMap.iter add_contract callees
 
   method private ghost_var_for_lhs lhs_decl =
     Option.map
@@ -348,6 +411,50 @@ class externalCallOrderChecker ispec = object (self)
           "The entry_order specification contains a cycle involving: %s"
           (String.concat ", " (List.map (fun d -> d.ispec_fname) cyclic)))
 
+  method private run_in_current_project () =
+    (* This method assumes Project.current () is already the private call-order
+       proof project. Inside that sandbox the checker can use the same in-place
+       visitor style as the rest of VernFR without polluting the user's main
+       Frama-C project. *)
+    Options.Self.feedback "Running %s" self#name;
+    resolved_constraints <- [];
+    entry_schedule <- None;
+    ghost_vars <- StringMap.empty;
+    cil_file <- Some (Ast.get ());
+    if Option.is_some ispec then begin
+      self#make_entry_vis ();
+      self#make_callable_vis ()
+    end;
+    Visitor.visitFramacFileSameGlobals
+      (self :> Visitor.frama_c_inplace)
+      (self#get_cil_file ())
+
+  method private print_generated_code () =
+    Printer.pp_file Format.std_formatter (Ast.get ());
+    Format.pp_print_flush Format.std_formatter ()
+
+  method! run () =
+    (* The call-order checker generates proof scaffolding: ghost globals,
+       assertions, and eventually a harness. Keep that scaffolding in a copied
+       project so the user's main project remains available for the rest of the
+       VernFR checks and any later Frama-C analyses. *)
+    (* Frama-C project copies reset projectified parameters to their defaults.
+       Capture the option while still in the user's project, then use the
+       captured value after switching to the proof project. *)
+    let print_generated_code = Options.PrintCallOrder.get () in
+    let proof_prj =
+      File.create_project_from_visitor
+        ~last:false
+        "vernfr_call_order_proof"
+        (fun prj -> new Visitor.frama_c_copy prj)
+    in
+    Project.on proof_prj
+      (fun () ->
+        self#run_in_current_project ();
+        if print_generated_code then
+          self#print_generated_code ())
+      ()
+
   method !vfile file =
     let spec = self#get_ispec () in
     (* Build the resolved model once, then continue visiting function bodies so
@@ -362,6 +469,7 @@ class externalCallOrderChecker ispec = object (self)
     ghost_vars <- vars;
     self#log_resolved_constraints constraints;
     self#log_ghost_vars vars;
+    self#add_preservation_contracts constraints vars;
     self#log_entry_schedule schedule;
     Cil.DoChildren
 
