@@ -3,7 +3,6 @@ open GenericNFRChecker
 open Parser_lib.Ispec
 
 module StringMap = Map.Make(String)
-
 let call_order_emitter =
   Emitter.create
     "vernfr_call_order"
@@ -21,9 +20,9 @@ type resolved_order_constraint = {
 }
 
 type entry_schedule =
-  (* One topological order of the entry functions, compatible with entry_order.
-     This will become the call sequence in the generated harness. *)
-  | EntrySchedule of ispec_decl list
+  (* All topological orders of the entry functions that are compatible with
+     entry_order. Each schedule gets its own generated harness. *)
+  | EntrySchedules of ispec_decl list list
   (* If entry_order is cyclic, there is no meaningful harness order. *)
   | EntryOrderCycle of ispec_decl list
 
@@ -77,7 +76,6 @@ let entry_schedule_of_ispec spec =
   let module EntryGraph =
     Graph.Persistent.Digraph.ConcreteBidirectional(EntryVertex)
   in
-  let module EntryTopological = Graph.Topological.Make_stable(EntryGraph) in
   let module EntryComponents = Graph.Components.Make(EntryGraph) in
   let graph =
     List.fold_left
@@ -114,14 +112,45 @@ let entry_schedule_of_ispec spec =
     in
     EntryOrderCycle cyclic
   else
-    let schedule =
-      EntryTopological.fold
-        (fun decl acc -> decl :: acc)
+    let has_remaining_predecessor remaining decl =
+      let found = ref false in
+      EntryGraph.iter_pred
+        (fun pred ->
+          if List.exists (EntryVertex.equal pred) remaining then
+            found := true)
         graph
-        []
-      |> List.rev
+        decl;
+      !found
     in
-    EntrySchedule schedule
+    let rec enumerate scheduled remaining =
+      match remaining with
+      | [] -> [List.rev scheduled]
+      | _ ->
+        let candidates =
+          List.filter
+            (fun decl -> not (has_remaining_predecessor remaining decl))
+            remaining
+        in
+        List.concat_map
+          (fun candidate ->
+            let remaining' =
+              List.filter
+                (fun decl -> not (EntryVertex.equal decl candidate))
+                remaining
+            in
+            enumerate (candidate :: scheduled) remaining')
+          candidates
+    in
+    let schedules =
+      enumerate [] entries
+      |> List.sort
+        (fun s1 s2 ->
+          List.compare
+            (fun d1 d2 -> Int.compare (entry_position d1) (entry_position d2))
+            s1
+            s2)
+    in
+    EntrySchedules schedules
 
 let global_name_exists file name =
   List.exists
@@ -237,6 +266,9 @@ let ghost_var_preserved_predicate ~loc ghost_vi =
     ~names:["nfr_preserve_" ^ ghost_vi.vname]
     (Req, current, old)
 
+let harness_name index =
+  Format.sprintf "__nfr_call_order_harness_%d" index
+
 class externalCallOrderChecker ispec = object (self)
   inherit genericNFRChecker ispec
 
@@ -335,6 +367,38 @@ class externalCallOrderChecker ispec = object (self)
     if ghost_vis <> [] then
       StringMap.iter add_contract callees
 
+  method private harness_call_stmt loc decl =
+    let callee_vi = self#vi_from_ispec_decl decl in
+    Cil.mkStmtOneInstr (Call (None, Var callee_vi, [], loc))
+
+  method private make_harness_function file index schedule =
+    let loc = Fileloc.unknown in
+    let name = fresh_global_name file (harness_name index) 0 in
+    let fundec = Cil.emptyFunction name in
+    fundec.svar.vdefined <- true;
+    fundec.sbody <-
+      Cil.mkBlock (List.map (self#harness_call_stmt loc) schedule);
+    Cfg.clearCFGinfo ~clear_id:false fundec;
+    Cfg.prepareCFG fundec;
+    Globals.Functions.add (Definition (fundec, loc));
+    file.globals <- file.globals @ [GFun (fundec, loc)];
+    Ast.mark_as_grown ();
+    fundec
+
+  method private generate_harnesses file = function
+    | EntryOrderCycle _ -> ()
+    | EntrySchedules schedules ->
+      let harnesses =
+        List.mapi (self#make_harness_function file) schedules
+      in
+      match harnesses with
+      | [] -> ()
+      | first_harness :: _ ->
+        (* MainFunction is projectified. Since call-order checking runs inside
+           the copied proof project, this changes the proof project entry point
+           without changing the user's main project. *)
+        Globals.set_entry_point first_harness.svar.vname false
+
   method private ghost_var_for_lhs lhs_decl =
     Option.map
       (fun var -> var.ghost_vi)
@@ -413,10 +477,14 @@ class externalCallOrderChecker ispec = object (self)
     aux [] stmts
 
   method private log_entry_schedule = function
-    | EntrySchedule schedule ->
+    | EntrySchedules [schedule] ->
       Options.Self.debug ~level:3
         "Computed call-order harness schedule: %s"
         (String.concat " < " (List.map (fun d -> d.ispec_fname) schedule))
+    | EntrySchedules schedules ->
+      Options.Self.debug ~level:3
+        "Computed %d call-order harness schedules"
+        (List.length schedules)
     | EntryOrderCycle cyclic ->
       self#print_error
         (Format.asprintf
@@ -482,6 +550,7 @@ class externalCallOrderChecker ispec = object (self)
     self#log_resolved_constraints constraints;
     self#log_ghost_vars vars;
     self#add_preservation_contracts constraints vars;
+    self#generate_harnesses file schedule;
     self#log_entry_schedule schedule;
     Cil.DoChildren
 
