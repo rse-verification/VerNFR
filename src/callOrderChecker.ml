@@ -3,7 +3,6 @@ open GenericNFRChecker
 open Parser_lib.Ispec
 
 module StringMap = Map.Make(String)
-module StringSet = Set.Make(String)
 
 let call_order_emitter =
   Emitter.create
@@ -40,76 +39,89 @@ let decl_name decl = decl.ispec_fname
 let ghost_var_name decl =
   "__nfr_" ^ decl_name decl ^ "_called"
 
-let ordered_insert decl decls =
-  if List.exists (fun d -> decl_name d = decl_name decl) decls then decls
-  else decls @ [decl]
+(* Map each entry function name to its position in entry_fns, so the stable
+   topological sort can keep the user-written order for unrelated entries. *)
+let make_entry_positions entries =
+  entries
+  |> List.mapi (fun idx decl -> decl_name decl, idx)
+  |> List.fold_left
+    (fun acc (name, idx) -> StringMap.add name idx acc)
+    StringMap.empty
 
-let decrement_degree decl degrees =
-  let name = decl_name decl in
-  let degree = Option.value ~default:0 (StringMap.find_opt name degrees) in
-  StringMap.add name (max 0 (degree - 1)) degrees
-
+(* Build the partial-order graph from entry_order assumptions. If the graph is
+   cyclic, report the cyclic entries; otherwise return a stable topological
+   schedule that will later drive the generated harness. *)
 let entry_schedule_of_ispec spec =
   let entries = spec.entry_fns in
-  (* Kahn-style topological sort over the entry_order partial order. The parser
-     has already resolved names to declarations, so names are stable keys here
-     and preserve the user-facing spelling. *)
-  let initial_in_degree =
+  let entry_positions = make_entry_positions entries in
+  let entry_position decl =
+    StringMap.find (decl_name decl) entry_positions
+  in
+  (* Vertices are the entry declarations themselves. Equality/hash use the
+     entry function name, while comparison follows the user's entry_fns order so
+     ocamlgraph's stable topological sort keeps unrelated entries deterministic
+     without making the harness order alphabetical. *)
+  let module EntryVertex = struct
+    type t = ispec_decl
+
+    let compare d1 d2 =
+      if String.equal (decl_name d1) (decl_name d2) then 0
+      else Int.compare (entry_position d1) (entry_position d2)
+
+    let equal d1 d2 =
+      String.equal (decl_name d1) (decl_name d2)
+
+    let hash decl =
+      Hashtbl.hash (decl_name decl)
+  end in
+  let module EntryGraph =
+    Graph.Persistent.Digraph.ConcreteBidirectional(EntryVertex)
+  in
+  let module EntryTopological = Graph.Topological.Make_stable(EntryGraph) in
+  let module EntryComponents = Graph.Components.Make(EntryGraph) in
+  let graph =
     List.fold_left
-      (fun acc decl -> StringMap.add (decl_name decl) 0 acc)
-      StringMap.empty
+      EntryGraph.add_vertex
+      EntryGraph.empty
       entries
   in
-  let add_edge (successors, degrees) = function
-    | CalledBefore (lhs, rhs) ->
-      let lhs_name = decl_name lhs in
-      let rhs_name = decl_name rhs in
-      let old_succs = Option.value ~default:[] (StringMap.find_opt lhs_name successors) in
-      let edge_already_present =
-        List.exists (fun succ -> decl_name succ = rhs_name) old_succs
-      in
-      let successors = StringMap.add lhs_name (ordered_insert rhs old_succs) successors in
-      if edge_already_present then successors, degrees
-      else
-        let old_degree = Option.value ~default:0 (StringMap.find_opt rhs_name degrees) in
-        successors, StringMap.add rhs_name (old_degree + 1) degrees
+  let graph =
+    List.fold_left
+      (fun graph -> function
+        | CalledBefore (lhs, rhs) ->
+          EntryGraph.add_edge graph lhs rhs)
+      graph
+      spec.entry_order
   in
-  let successors, in_degree =
-    List.fold_left add_edge (StringMap.empty, initial_in_degree) spec.entry_order
+  (* In a directed graph, cycles are exactly strongly connected components with
+     at least two vertices, plus singleton components that have a self-loop. *)
+  let is_cyclic_component = function
+    | [] -> false
+    | [v] -> EntryGraph.mem_edge graph v v
+    | _ :: _ :: _ -> true
   in
-  let zero_degree degrees =
-    List.filter
-      (fun decl ->
-        Option.value ~default:0 (StringMap.find_opt (decl_name decl) degrees) = 0)
-      entries
+  let cyclic_vertices =
+    EntryComponents.scc_list graph
+    |> List.filter is_cyclic_component
+    |> List.concat
+    |> List.sort_uniq EntryVertex.compare
   in
-  (* Pick the first not-yet-scheduled zero-degree entry in declaration order.
-     That makes the generated harness deterministic for partial orders. *)
-  let rec first_unscheduled_zero seen = function
-    | [] -> None
-    | decl :: rest ->
-      if StringSet.mem (decl_name decl) seen then first_unscheduled_zero seen rest
-      else Some decl
-  in
-  let rec loop seen degrees schedule =
-    match first_unscheduled_zero seen (zero_degree degrees) with
-    | None ->
-      (* No schedulable entry remains. If the schedule is incomplete, the
-         remaining nodes must be part of an entry_order cycle. *)
-      if List.length schedule = List.length entries then
-        EntrySchedule (List.rev schedule)
-      else
-        let cyclic =
-          List.filter (fun decl -> not (StringSet.mem (decl_name decl) seen)) entries
-        in
-        EntryOrderCycle cyclic
-    | Some decl ->
-      let seen = StringSet.add (decl_name decl) seen in
-      let succs = Option.value ~default:[] (StringMap.find_opt (decl_name decl) successors) in
-      let degrees = List.fold_left (fun acc succ -> decrement_degree succ acc) degrees succs in
-      loop seen degrees (decl :: schedule)
-  in
-  loop StringSet.empty in_degree []
+  if cyclic_vertices <> [] then
+    let cyclic =
+      List.filter
+        (fun decl -> List.exists (EntryVertex.equal decl) cyclic_vertices)
+        entries
+    in
+    EntryOrderCycle cyclic
+  else
+    let schedule =
+      EntryTopological.fold
+        (fun decl acc -> decl :: acc)
+        graph
+        []
+      |> List.rev
+    in
+    EntrySchedule schedule
 
 let global_name_exists file name =
   List.exists

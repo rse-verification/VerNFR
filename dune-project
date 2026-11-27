@@ -16,7 +16,8 @@
  (name frama-c-vernfr)
  (depends
   (ocaml (>= 5.4))
-  (frama-c (and (>= 33) (< 34))))
+  (frama-c (and (>= 33) (< 34)))
+  ocamlgraph)
  (synopsis "Frama-C plugin for verification on non-functional contracts")
  (description "This plugin for the Frama-C platform allows verification of
 non-functional contracts, including properties on control flow and data flow.")
