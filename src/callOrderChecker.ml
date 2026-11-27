@@ -164,6 +164,11 @@ let string_starts_with ~prefix s =
   let prefix_len = String.length prefix in
   String.length s >= prefix_len && String.sub s 0 prefix_len = prefix
 
+let string_ends_with ~suffix s =
+  let suffix_len = String.length suffix in
+  let len = String.length s in
+  len >= suffix_len && String.sub s (len - suffix_len) suffix_len = suffix
+
 let string_for_all pred s =
   let rec loop i =
     i = String.length s || (pred s.[i] && loop (i + 1))
@@ -246,6 +251,18 @@ let assertion_name lhs rhs =
 let preservation_behavior_name =
   "nfr_call_order_preserves_ghosts"
 
+let rec assertion_names_of_property = function
+  | Property.IPCodeAnnot
+      { ica_ca =
+          { annot_content =
+              AAssert (_, { tp_statement = { pred_name; _ }; _ });
+            _ };
+        _ } ->
+    pred_name
+  | Property.IPPropertyInstance { ii_ip; _ } ->
+    assertion_names_of_property ii_ip
+  | _ -> []
+
 let ghost_var_called_predicate ~loc lhs rhs ghost_vi =
   let ghost_term = Cil.cvar_to_term ~loc ghost_vi in
   let one = Logic_const.tinteger ~loc 1 in
@@ -277,10 +294,12 @@ class externalCallOrderChecker ispec = object (self)
   val mutable resolved_constraints: resolved_order_constraint list = []
   val mutable entry_schedule: entry_schedule option = None
   val mutable ghost_vars: ghost_call_var StringMap.t = StringMap.empty
+  val mutable generated_harnesses: fundec list = []
 
   method resolved_constraints = resolved_constraints
   method entry_schedule = entry_schedule
   method ghost_vars = ghost_vars
+  method generated_harnesses = generated_harnesses
 
   method private resolve_order_constraint = function
     | CalledBefore (lhs, rhs) ->
@@ -376,8 +395,9 @@ class externalCallOrderChecker ispec = object (self)
     let name = fresh_global_name file (harness_name index) 0 in
     let fundec = Cil.emptyFunction name in
     fundec.svar.vdefined <- true;
+    let return_stmt = Cil.mkStmt (Return (None, loc)) in
     fundec.sbody <-
-      Cil.mkBlock (List.map (self#harness_call_stmt loc) schedule);
+      Cil.mkBlock (List.map (self#harness_call_stmt loc) schedule @ [return_stmt]);
     Cfg.clearCFGinfo ~clear_id:false fundec;
     Cfg.prepareCFG fundec;
     Globals.Functions.add (Definition (fundec, loc));
@@ -386,18 +406,151 @@ class externalCallOrderChecker ispec = object (self)
     fundec
 
   method private generate_harnesses file = function
-    | EntryOrderCycle _ -> ()
+    | EntryOrderCycle _ -> []
     | EntrySchedules schedules ->
       let harnesses =
         List.mapi (self#make_harness_function file) schedules
       in
-      match harnesses with
+      (match harnesses with
       | [] -> ()
       | first_harness :: _ ->
         (* MainFunction is projectified. Since call-order checking runs inside
            the copied proof project, this changes the proof project entry point
            without changing the user's main project. *)
-        Globals.set_entry_point first_harness.svar.vname false
+        Globals.set_entry_point first_harness.svar.vname false);
+      harnesses
+
+  method private inline_entry_points_for_wp () =
+    List.iter
+      (fun entry_vi ->
+        try
+          let kf = Globals.Functions.get entry_vi in
+          if Kernel_function.is_definition kf then
+            Inline.InlineCalls.add kf
+        with Not_found ->
+          Options.Self.warning
+            "Cannot inline unknown call-order entry point %a"
+            Printer.pp_varinfo entry_vi)
+      (self#get_entry_vis ());
+    Inline.inline_calls (Ast.get ())
+
+  method private constraint_of_wp_property prop =
+    (* Annotations.add_code_annot prefixes generated predicate names with the
+       emitter name. Match by suffix so "vernfr_call_order_<assertion-name>"
+       still maps back to the original order constraint. *)
+    let names = assertion_names_of_property prop in
+    List.find_opt
+      (fun constraint_ ->
+        let expected =
+          assertion_name constraint_.lhs_decl constraint_.rhs_decl
+        in
+        List.exists
+          (fun name -> name = expected || string_ends_with ~suffix:expected name)
+          names)
+      resolved_constraints
+
+  method private report_failed_wp_goal status goal prop =
+    match self#constraint_of_wp_property prop with
+    | Some constraint_ ->
+      self#print_error
+        (Format.asprintf
+          "Call-order constraint %s < %s was not proved (%s, WP goal %s: %a)"
+          constraint_.lhs_decl.ispec_fname
+          constraint_.rhs_decl.ispec_fname
+          status
+          (Wp.Wpo.get_gid goal)
+          Property.short_pretty prop)
+    | None ->
+      self#print_error
+        (Format.asprintf
+          "Generated call-order harness goal was not proved (%s, WP goal %s: %a)"
+          status
+          (Wp.Wpo.get_gid goal)
+          Property.short_pretty prop)
+
+  method private report_wp_results goals =
+    let proved = ref 0 in
+    let failed = ref [] in
+    let unknown = ref [] in
+    Bag.iter
+      (fun goal ->
+        match Wp.Wpo.get_proof goal with
+        | `Passed, _ -> incr proved
+        | `Failed, prop -> failed := (goal, prop) :: !failed
+        | `Unknown, prop -> unknown := (goal, prop) :: !unknown)
+      goals;
+    let failed = List.rev !failed in
+    let unknown = List.rev !unknown in
+    let total = !proved + List.length failed + List.length unknown in
+    if failed = [] && unknown = [] then
+      Options.Self.result
+        "Call-order WP proved %d/%d generated harness goal(s)"
+        !proved
+        total
+    else begin
+      List.iter
+        (fun (goal, prop) ->
+          self#report_failed_wp_goal "failed" goal prop)
+        failed;
+      List.iter
+        (fun (goal, prop) ->
+          self#report_failed_wp_goal "unknown" goal prop)
+        unknown;
+      self#print_error
+        (Format.asprintf
+          "Call-order WP proved %d/%d generated harness goal(s)"
+          !proved
+          total)
+    end
+
+  method private run_wp_on_harnesses () =
+    match generated_harnesses with
+    | [] ->
+      Options.Self.warning
+        "No call-order harness was generated; skipping internal WP run"
+    | harnesses ->
+      self#inline_entry_points_for_wp ();
+      let harness_kfs =
+        List.fold_left
+          (fun acc harness ->
+            try
+              Cil_datatype.Kf.Set.add (Globals.Functions.get harness.svar) acc
+            with Not_found ->
+              Options.Self.warning
+                "Cannot select unknown call-order harness %a for WP"
+                Printer.pp_varinfo harness.svar;
+              acc)
+          Cil_datatype.Kf.Set.empty
+          harnesses
+      in
+      if not (Cil_datatype.Kf.Set.is_empty harness_kfs) then begin
+        let fct = Wp.Wp_parameters.Fct_list harness_kfs in
+        let generator = Wp.Generator.create () in
+        let model = generator#model in
+        let bhv = Wp.Wp_parameters.Behaviors.get () in
+        let prop = Wp.Wp_parameters.Properties.get () in
+        let log_file = Options.NfrLogFile.get () in
+        Options.Self.feedback
+          "Running WP internally on %d generated call-order harness(es); WP output is logged to %s"
+          (Cil_datatype.Kf.Set.cardinal harness_kfs)
+          log_file;
+        let goals =
+          (* WP and the kernel may emit quite a bit of progress/spec-generation
+             output while building and proving the harness VCs. Keep that noise
+             in VernFR's log file; after the run, report only the structured
+             call-order result through VernFR diagnostics. *)
+          Utils.exec_with_redirected_stdout
+            ~announce:false
+            log_file
+            (fun () ->
+              Ast.compute ();
+              Wp.WpTarget.compute model ~fct ~bhv ~prop ();
+              let goals = generator#compute_main ~fct ~bhv ~prop () in
+              Wp.Register.do_wp_proofs goals;
+              goals)
+        in
+        self#report_wp_results goals
+      end
 
   method private ghost_var_for_lhs lhs_decl =
     Option.map
@@ -500,6 +653,7 @@ class externalCallOrderChecker ispec = object (self)
     resolved_constraints <- [];
     entry_schedule <- None;
     ghost_vars <- StringMap.empty;
+    generated_harnesses <- [];
     cil_file <- Some (Ast.get ());
     if Option.is_some ispec then begin
       self#make_entry_vis ();
@@ -513,6 +667,11 @@ class externalCallOrderChecker ispec = object (self)
     Printer.pp_file Format.std_formatter (Ast.get ());
     Format.pp_print_flush Format.std_formatter ()
 
+  method private refresh_cfg () =
+    let file = Ast.get () in
+    Cfg.clearFileCFG ~clear_id:false file;
+    Cfg.computeFileCFG file
+
   method! run () =
     (* The call-order checker generates proof scaffolding: ghost globals,
        assertions, and eventually a harness. Keep that scaffolding in a copied
@@ -522,6 +681,7 @@ class externalCallOrderChecker ispec = object (self)
        Capture the option while still in the user's project, then use the
        captured value after switching to the proof project. *)
     let print_generated_code = Options.PrintCallOrder.get () in
+    let prove_call_order = Options.ProveCallOrder.get () in
     let proof_prj =
       File.create_project_from_visitor
         ~last:false
@@ -531,8 +691,12 @@ class externalCallOrderChecker ispec = object (self)
     Project.on proof_prj
       (fun () ->
         self#run_in_current_project ();
+        self#refresh_cfg ();
         if print_generated_code then
           self#print_generated_code ())
+      ();
+    if prove_call_order then
+      Project.on proof_prj self#run_wp_on_harnesses
       ()
 
   method !vfile file =
@@ -550,7 +714,7 @@ class externalCallOrderChecker ispec = object (self)
     self#log_resolved_constraints constraints;
     self#log_ghost_vars vars;
     self#add_preservation_contracts constraints vars;
-    self#generate_harnesses file schedule;
+    generated_harnesses <- self#generate_harnesses file schedule;
     self#log_entry_schedule schedule;
     Cil.DoChildren
 

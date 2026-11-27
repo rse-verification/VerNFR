@@ -142,6 +142,12 @@ module PrintCallOrder = Self.False
   let help = "when on (off by default), prints the generated proof code for external call-order verification"
 end)
 
+module ProveCallOrder = Self.True
+(struct
+  let option_name = "-nfr-call-order-wp"
+  let help = "when on (on by default), runs WP internally on generated external call-order harnesses"
+end)
+
 
 module CheckAll = Self.False
 (struct
