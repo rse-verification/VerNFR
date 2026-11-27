@@ -2,3 +2,5 @@
 [nfr] Parsed ispec successfully!
 [nfr] Running whiteListFunCallsChecker
 [nfr] Running externalCallOrderChecker
+[nfr] Running WP internally on 1 generated call-order harness(es); WP output is logged to nfr-log.txt
+[nfr] Call-order WP proved 4/4 generated harness goal(s)

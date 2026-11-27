@@ -2,3 +2,6 @@
 [nfr] Parsed ispec successfully!
 [nfr] Running whiteListFunCallsChecker
 [nfr] Running externalCallOrderChecker
+[nfr] Running WP internally on 1 generated call-order harness(es); WP output is logged to nfr-log.txt
+[nfr] Warning: Call-order constraint foo < bar was not proved (unknown, WP goal typed_nfr_call_order_harness_0_assert_vernfr_call_order_nfr_call: vernfr_call_order)
+[nfr] Warning: Call-order WP proved 2/3 generated harness goal(s)

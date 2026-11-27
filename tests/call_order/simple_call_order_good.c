@@ -1,6 +1,7 @@
 /* run.config
    DEPS: extern_defs.h simple_call_order.is
-   STDOPT: +"-nfr-ispec simple_call_order.is" +"-nfr-check-calls" +"-nfr-external-call-order" +"-nfr-no-call-order-wp" +"-keep-unused-functions" +"all" +"-keep-unused-types"
+   STDOPT: +"-nfr-ispec simple_call_order.is" +"-nfr-check-calls" +"-nfr-external-call-order" +"-keep-unused-functions" +"all" +"-keep-unused-types"
+   STDOPT: +"-nfr-ispec simple_call_order.is" +"-nfr-check-calls" +"-nfr-external-call-order" +"-nfr-no-call-order-wp" +"-nfr-call-order-print" +"-keep-unused-functions" +"all" +"-keep-unused-types"
 */
 
 #include "extern_defs.h"
