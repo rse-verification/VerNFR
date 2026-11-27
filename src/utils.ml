@@ -130,8 +130,10 @@ let loc_to_fname (loc: Filepos.t * Filepos.t) =
   Filepath.basename (Filepos.path (fst loc))
 
 
-let exec_with_redirected_stdout log_file f =
+let exec_with_redirected_stdout ?(announce=true) log_file f =
   let open Unix in
+  Format.pp_print_flush Format.std_formatter ();
+  flush Stdlib.stdout;
   (* Open the output file *)
   let fd_log = openfile log_file [O_WRONLY; O_CREAT; O_APPEND] 0o644 in
 
@@ -144,9 +146,12 @@ let exec_with_redirected_stdout log_file f =
   (* Close the file descriptor (stdout now points to it) *)
   close fd_log;
 
-  Self.feedback "Running with redirected stdout";
+  if announce then
+    Self.feedback "Running with redirected stdout";
   Fun.protect
     ~finally:(fun () ->
+      Format.pp_print_flush Format.std_formatter ();
+      flush Stdlib.stdout;
       (* Restore original stdout *)
       dup2 fd_stdout_copy stdout;
       close fd_stdout_copy

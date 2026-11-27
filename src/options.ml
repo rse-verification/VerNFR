@@ -136,6 +136,18 @@ module CheckExternalCallOrder = Self.False
   let help = "when on (off by defualt), if the external call order in the interface specification is not respected."
 end)
 
+module PrintCallOrder = Self.False
+(struct
+  let option_name = "-nfr-call-order-print"
+  let help = "when on (off by default), prints the generated proof code for external call-order verification"
+end)
+
+module ProveCallOrder = Self.True
+(struct
+  let option_name = "-nfr-call-order-wp"
+  let help = "when on (on by default), runs WP internally on generated external call-order harnesses"
+end)
+
 
 module CheckAll = Self.False
 (struct

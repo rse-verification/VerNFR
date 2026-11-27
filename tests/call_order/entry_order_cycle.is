@@ -1,0 +1,8 @@
+module entry_order_cycle {
+  entry_functions: {
+    void cycle_a(void), void cycle_b(void)
+  }
+  entry_order: { cycle_a < cycle_b, cycle_b < cycle_a }
+  external_calls: { }
+  external_call_order: { }
+}

@@ -1,0 +1,9 @@
+[kernel] Parsing call_order_bad2.c (with preprocessing)
+[nfr] Parsed ispec successfully!
+[nfr] Running whiteListFunCallsChecker
+[nfr] Running externalCallOrderChecker
+[nfr] Running WP internally on 2 generated call-order harness(es); WP output is logged to nfr-log.txt
+[nfr] Warning: Call-order constraint configure < calibrate was not proved (unknown, WP goal typed_nfr_call_order_harness_0_assert_vernfr_call_order_nfr_call: vernfr_call_order)
+[nfr] Warning: Call-order constraint configure < calibrate was not proved (unknown, WP goal typed_nfr_call_order_harness_1_assert_vernfr_call_order_nfr_call: vernfr_call_order)
+[nfr] Warning: Call-order constraint power_on < configure was not proved (unknown, WP goal typed_nfr_call_order_harness_1_assert_vernfr_call_order_nfr_call_2: vernfr_call_order)
+[nfr] Warning: Call-order WP proved 11/14 generated harness goal(s)

@@ -1,0 +1,9 @@
+{
+  "dir": "tests/call_order/result",
+  "info": "TEST #1 OF TEST FILE tests/call_order/call_order_bad1.c",
+  "cmd": "frama-c -check -no-autoload-plugins -load-plugin=vernfr,wp    call_order_bad1.c  -vernfr -nfr-ispec call_order.is -nfr-check-calls -nfr-external-call-order -nfr-no-call-order-wp -nfr-call-order-print -keep-unused-functions all -keep-unused-types > \"call_order_bad1.1.res.log\" 2> \"call_order_bad1.1.err.log\"",
+  "out": "call_order_bad1.1.res.log",
+  "err": "call_order_bad1.1.err.log",
+  "oracle_out": "../oracle/call_order_bad1.1.res.oracle",
+  "oracle_err": "../oracle/call_order_bad1.1.err.oracle"
+}

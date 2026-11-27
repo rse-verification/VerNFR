@@ -1,10 +1,10 @@
 module m1 {
-  entry_functions: { 
+  entry_functions: {
     void f_init(void), void f_main(void)
   }
   entry_order: { f_init < f_main }
   external_calls: {
-    extern_defs: {
+    extern_defs.h: {
       void foo(void), void bar(void)
     }
   }

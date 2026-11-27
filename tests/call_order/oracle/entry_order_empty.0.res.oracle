@@ -1,0 +1,6 @@
+[kernel] Parsing entry_order_empty.c (with preprocessing)
+[nfr] Parsed ispec successfully!
+[nfr] Running whiteListFunCallsChecker
+[nfr] Running externalCallOrderChecker
+[nfr] Running WP internally on 2 generated call-order harness(es); WP output is logged to nfr-log.txt
+[nfr] Call-order WP proved 0/0 generated harness goal(s)
