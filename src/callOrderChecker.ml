@@ -5,6 +5,13 @@ open Parser_lib.Ispec
 module StringMap = Map.Make(String)
 module StringSet = Set.Make(String)
 
+let call_order_emitter =
+  Emitter.create
+    "vernfr_call_order"
+    [Emitter.Code_annot]
+    ~correctness:[]
+    ~tuning:[]
+
 type resolved_order_constraint = {
   lhs_decl: ispec_decl;
   rhs_decl: ispec_decl;
@@ -177,6 +184,32 @@ let make_ghost_call_var file decl =
     Ast.mark_as_grown ();
     { watched_decl = decl; ghost_vi = vi }
 
+(* Keep call-site matching deliberately simple: only direct calls to named
+   functions are relevant for these first-order call-order constraints. CIL
+   uses Local_init for declarations initialized by a function call, e.g.
+   "int value = sample();", so handle that form alongside plain Call. *)
+let direct_call_varinfo = function
+  | { skind = Instr (Call (_, Var vi, _, loc)); _ } -> Some (vi, loc)
+  | { skind = Instr (Local_init (_, ConsInit (vi, _, _), loc)); _ } ->
+    Some (vi, loc)
+  | _ -> None
+
+let ghost_assignment_stmt ~loc ghost_vi =
+  Cil.mkStmtOneInstr
+    ~ghost:true
+    (Set ((Var ghost_vi, NoOffset), Cil.one ~loc, loc))
+
+let assertion_name lhs rhs =
+  "nfr_call_order_" ^ lhs.ispec_fname ^ "_before_" ^ rhs.ispec_fname
+
+let ghost_var_called_predicate ~loc lhs rhs ghost_vi =
+  let ghost_term = Cil.cvar_to_term ~loc ghost_vi in
+  let one = Logic_const.tinteger ~loc 1 in
+  Logic_const.prel
+    ~loc
+    ~names:[assertion_name lhs rhs]
+    (Req, ghost_term, one)
+
 class externalCallOrderChecker ispec = object (self)
   inherit genericNFRChecker ispec
 
@@ -222,10 +255,87 @@ class externalCallOrderChecker ispec = object (self)
     StringMap.iter
       (fun lhs_name var ->
         Options.Self.debug ~level:3
-          "Generated ghost call-state variable %a for %s"
+          "Generated ghost call variable %a for %s"
           Printer.pp_varinfo var.ghost_vi
           lhs_name)
       vars
+
+  method private ghost_var_for_lhs lhs_decl =
+    Option.map
+      (fun var -> var.ghost_vi)
+      (StringMap.find_opt lhs_decl.ispec_fname ghost_vars)
+
+  method private constraints_with_rhs callee_vi =
+    List.filter
+      (fun constraint_ -> Utils.viEq callee_vi constraint_.rhs_vi)
+      resolved_constraints
+
+  method private ghost_var_for_lhs_call callee_vi =
+    List.find_map
+      (fun constraint_ ->
+        if Utils.viEq callee_vi constraint_.lhs_vi then
+          self#ghost_var_for_lhs constraint_.lhs_decl
+        else None)
+      resolved_constraints
+
+  method private add_call_order_assertions stmt callee_vi loc =
+    if not (Annotations.has_code_annot ~emitter:call_order_emitter stmt) then
+      List.iter
+        (fun constraint_ ->
+          match self#ghost_var_for_lhs constraint_.lhs_decl with
+          | None -> ()
+          | Some ghost_vi ->
+            let pred =
+              ghost_var_called_predicate
+                ~loc
+                constraint_.lhs_decl
+                constraint_.rhs_decl
+                ghost_vi
+            in
+            let annot =
+              Logic_const.new_code_annotation
+                (AAssert ([], Logic_const.toplevel_predicate pred))
+            in
+            match self#current_kf with
+            | Some kf ->
+              Annotations.add_code_annot call_order_emitter ~kf stmt annot
+            | None ->
+              Annotations.add_code_annot call_order_emitter stmt annot)
+        (self#constraints_with_rhs callee_vi)
+
+  method private is_generated_ghost_assignment_to ghost_vi stmt =
+    match stmt.skind with
+    | Instr (Set ((Var vi, NoOffset), _, _)) ->
+      stmt.ghost && Cil_datatype.Varinfo.equal vi ghost_vi
+    | _ -> false
+
+  method private instrument_stmt stmt =
+    match direct_call_varinfo stmt with
+    | None -> None
+    | Some (callee_vi, loc) ->
+      self#add_call_order_assertions stmt callee_vi loc;
+      Option.map
+        (fun ghost_vi -> ghost_vi, ghost_assignment_stmt ~loc ghost_vi)
+        (self#ghost_var_for_lhs_call callee_vi)
+
+  method private instrument_block_stmts stmts =
+    (* Assertions are attached to the call statement itself, which Frama-C
+       prints immediately before the statement. The lhs marker is a ghost
+       statement inserted after the call, with a small idempotence check for
+       repeated runs through -then. *)
+    let rec aux acc = function
+      | [] -> List.rev acc
+      | stmt :: rest ->
+        match self#instrument_stmt stmt, rest with
+        | Some (ghost_vi, _), next :: rest'
+          when self#is_generated_ghost_assignment_to ghost_vi next ->
+          aux (stmt :: acc) (next :: rest')
+        | Some (_, ghost_stmt), _ ->
+          aux (ghost_stmt :: stmt :: acc) rest
+        | None, _ ->
+          aux (stmt :: acc) rest
+    in
+    aux [] stmts
 
   method private log_entry_schedule = function
     | EntrySchedule schedule ->
@@ -240,9 +350,8 @@ class externalCallOrderChecker ispec = object (self)
 
   method !vfile file =
     let spec = self#get_ispec () in
-    (* This first checker slice only builds the resolved model needed by later
-       steps: ghost-state generation, call-site assertions, harness generation,
-       and WP result mapping. *)
+    (* Build the resolved model once, then continue visiting function bodies so
+       block-level instrumentation can insert assertions and ghost assignments. *)
     let constraints =
       List.map self#resolve_order_constraint spec.extern_calls.call_order
     in
@@ -254,5 +363,14 @@ class externalCallOrderChecker ispec = object (self)
     self#log_resolved_constraints constraints;
     self#log_ghost_vars vars;
     self#log_entry_schedule schedule;
-    Cil.SkipChildren
+    Cil.DoChildren
+
+  method !vblock _block =
+    Cil.DoChildrenPost
+      (fun block ->
+        let original_stmts = block.bstmts in
+        block.bstmts <- self#instrument_block_stmts block.bstmts;
+        if List.length original_stmts <> List.length block.bstmts then
+          Ast.mark_as_changed ();
+        block)
 end
